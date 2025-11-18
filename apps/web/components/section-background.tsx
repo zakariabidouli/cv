@@ -158,22 +158,30 @@ export function SectionBackground({ variant = "hexagons", opacity = "0.03" }: Se
   
   // Dots Pattern
   if (variant === "dots") {
-    const dots = Array.from({ length: 50 }, (_, i) => ({
-      x: Math.random() * 100,
-      y: Math.random() * 100,
-      size: Math.random() * 1.5 + 0.8,
-      color: Math.random() > 0.7 ? '#22c55e' : '#a855f7'
-    }));
+    const dots = Array.from({ length: 50 }, (_, i) => {
+      // Create a pseudo-random but deterministic value from index
+      const seed1 = (i * 2654435761) % 10000 / 10000;
+      const seed2 = (i * 1597334677) % 10000 / 10000;
+      const seed3 = (i * 2976579765) % 10000 / 10000;
+      const seed4 = (i * 3266489917) % 10000 / 10000;
+      
+      return {
+        x: seed1 * 100,
+        y: seed2 * 100,
+        size: seed3 * 1.5 + 0.8,
+        color: seed4 > 0.7 ? '#22c55e' : '#a855f7'
+      };
+    });
   
     return (
       <div className="absolute inset-0 overflow-hidden pointer-events-none" style={{ opacity }}>
         <svg className="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
           {dots.map((dot, i) => (
-            <circle key={i} cx={dot.x} cy={dot.y} r={dot.size} fill={dot.color} opacity="0.6" />
+            <circle key={i} cx={dot.x} cy={dot.y} r={dot.size} fill={dot.color} opacity="1" />
           ))}
         </svg>
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-violet-600/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute top-1/3 left-1/4 w-72 h-72 bg-green-500/8 rounded-full blur-3xl animate-pulse delay-1000"></div>        
+        <div className="absolute bottom-1/4 right-1/4 w-92 h-92 bg-violet-600/50 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute top-1/3 left-1/4 w-72 h-72 bg-green-500/16 rounded-full blur-3xl animate-pulse delay-1000"></div>        
       </div>
     );
   

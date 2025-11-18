@@ -15,7 +15,7 @@ export function Footer() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid md:grid-cols-3 gap-8 mb-8">
           <div>
-            <h3 className="font-bold text-lg mb-4">Zakaria</h3>
+            <h3 className="font-bold text-lg mb-4">Zakaria Bidouli</h3>
             <p className="text-muted-foreground text-sm leading-relaxed">
               Full-stack engineer crafting elegant digital solutions with clean code and innovative design.
             </p>
@@ -73,8 +73,8 @@ export function Footer() {
           </div>
         </div> */}
 
-        <div className="border-t border-border pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-muted-foreground">
-          <p>&copy; {currentYear} Zakaria. All rights reserved.</p>
+        <div className=" pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-muted-foreground">
+          <p>&copy; {currentYear} All rights reserved.</p>
           <div className="flex gap-6 mt-4 md:mt-0">
             <a href="#" className="hover:text-accent transition-colors">
               Privacy Policy

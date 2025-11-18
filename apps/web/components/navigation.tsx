@@ -23,6 +23,12 @@ export function Navigation() {
       const sections = navItems.map((item) => item.href.substring(1))
       const scrollPosition = window.scrollY + 100
 
+      const firstSection = document.getElementById(sections[0]);
+      if (firstSection && scrollPosition < firstSection.offsetTop) {
+        setActiveSection('');
+        return;
+      }
+
       for (const section of sections) {
         const element = document.getElementById(section)
         if (element) {
@@ -31,6 +37,7 @@ export function Navigation() {
             setActiveSection(section)
             break
           }
+          
         }
       }
     }
@@ -51,7 +58,7 @@ export function Navigation() {
               className="text-xl font-bold bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent hover:opacity-80 transition-opacity"
               aria-label="Home"
             >
-              Zbidouli
+              Z.Bidouli
             </Link>
           </div>
 

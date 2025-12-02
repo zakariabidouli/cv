@@ -1,4 +1,5 @@
 "use client"
+import { RetroGrid } from "@/components/ui/shadcn-io/retro-grid"
 
 type PatternVariant = "hero" | "hexagons" | "grid" | "circles" | "waves" | "dots"
 
@@ -154,62 +155,15 @@ export function SectionBackground({ variant = "hexagons", opacity = "0.04" }: Se
   }
 
 
-  // cyber punk
-  
-  // Dots Pattern
+  // Dots Pattern - Using RetroGrid from shadcn/ui
   if (variant === "dots") {
-    const dots = Array.from({ length: 50 }, (_, i) => {
-      // Create a pseudo-random but deterministic value from index
-      const seed1 = (i * 2654435761) % 10000 / 10000;
-      const seed2 = (i * 1597334677) % 10000 / 10000;
-      const seed3 = (i * 2976579765) % 10000 / 10000;
-      const seed4 = (i * 3266489917) % 10000 / 10000;
-      
-      return {
-        x: seed1 * 100,
-        y: seed2 * 100,
-        size: seed3 * 1.5 + 0.8,
-        color: seed4 > 0.7 ? '#22c55e' : '#a855f7'
-      };
-    });
-  
     return (
-      <div className="absolute inset-0 overflow-hidden pointer-events-none" style={{ opacity }}>
-        <svg className="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-          {dots.map((dot, i) => (
-            <circle key={i} cx={dot.x} cy={dot.y} r={dot.size} fill={dot.color} opacity="1" />
-          ))}
-        </svg>
+      <div className="absolute inset-0 overflow-hidden pointer-events-none" style={opacityStyle}>
+        <RetroGrid angle={-65.5} />
         <div className="absolute bottom-1/4 right-1/4 w-92 h-92 bg-violet-600/50 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute top-1/3 left-1/4 w-72 h-72 bg-green-500/16 rounded-full blur-3xl animate-pulse delay-1000"></div>        
+        <div className="absolute top-1/3 left-1/4 w-72 h-72 bg-green-500/16 rounded-full blur-3xl animate-pulse delay-1000"></div>
       </div>
-    );
-  
-    // return (
-    //   <div className="absolute inset-0 overflow-hidden pointer-events-none" style={opacityStyle}>
-    //     <svg
-    //       className="absolute inset-0 w-full h-full"
-    //       xmlns="http://www.w3.org/2000/svg"
-    //       viewBox="0 0 100 100"
-    //       preserveAspectRatio="xMidYMid slice"
-    //     >
-    //       <defs>
-    //         <pattern
-    //           id="dots"
-    //           x="0"
-    //           y="0"
-    //           width="20"
-    //           height="20"
-    //           patternUnits="userSpaceOnUse"
-    //         >
-    //           <circle cx="10" cy="10" r="1.5" fill="currentColor" />
-    //         </pattern>
-    //       </defs>
-    //       <rect width="100%" height="100%" fill="url(#dots)" />
-    //     </svg>
-    //     <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-primary/5 rounded-full blur-3xl animate-pulse delay-1000"></div>        
-    //   </div>
-    // )
+    )
   }
 
   // Default fallback

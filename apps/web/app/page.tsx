@@ -9,26 +9,20 @@ import { Contact } from "@/components/contact"
 import { Footer } from "@/components/footer"
 import { BackgroundDecor } from "@/components/background-decor"
 import { ScrollProgress } from "@/components/scroll-progress"
-import { ThemeProvider } from "@/app/theme-provider"
-import { AdminProvider } from "@/contexts/AdminContext"
 
 export default function Home() {
   return (
     <main className="min-h-screen bg-background text-foreground relative">
-      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-        <AdminProvider>
-          <BackgroundDecor />
-          <ScrollProgress />
-          <Navigation />
-          <Hero />
-          <About />
-          <Experience />
-          <Projects />
-          <Skills />
-          <Contact />
-          <Footer />
-        </AdminProvider>
-      </ThemeProvider>
+      <BackgroundDecor />
+      <ScrollProgress />
+      <Navigation />
+      <Hero />
+      <About />
+      <Experience />
+      <Projects />
+      <Skills />
+      <Contact />
+      <Footer />
     </main>
   )
 }

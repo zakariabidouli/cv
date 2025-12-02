@@ -173,6 +173,21 @@
     animation: neon-pulse 2s ease-in-out infinite;
   }
 
+  /* RetroGrid animation */
+  @keyframes grid {
+    0% {
+      transform: translate(0, 0);
+    }
+    100% {
+      transform: translate(var(--grid-size), var(--grid-size));
+    }
+  }
+
+  .animate-grid {
+    --grid-size: 60px;
+    animation: grid 15s linear infinite;
+  }
+
   /* Focus visible for accessibility */
   *:focus-visible {
     @apply outline-2 outline-offset-2 outline-accent;

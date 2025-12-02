@@ -2,14 +2,15 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-// import ThemeToggle from "next-themes"
+import { LogOut, Shield } from "lucide-react"
 import ThemeToggle from "@/components/ThemeToggle"
-// import { AdminLogin } from "@/components/admin-login"
+import { useAdmin } from "@/contexts/AdminContext"
 
 
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
   const [activeSection, setActiveSection] = useState("")
+  const { isAdmin, logout } = useAdmin()
 
   const navItems = [
     { label: "About", href: "#about" },
@@ -89,8 +90,19 @@ export function Navigation() {
             {/* add a button to toggle the dark mode   */}
             <ThemeToggle />
             
-            {/* Admin Login Button */}
-            {/* <AdminLogin /> */}
+            {/* Admin Logout Button - Only show when logged in */}
+            {isAdmin && (
+              <button
+                onClick={logout}
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 text-accent bg-accent/10 hover:bg-accent/20"
+                aria-label="Logout Admin"
+                title="Logout Admin"
+              >
+                <Shield className="w-4 h-4" />
+                <span className="hidden sm:inline">Admin</span>
+                <LogOut className="w-4 h-4" />
+              </button>
+            )}
 
           </div>
 
@@ -135,7 +147,20 @@ export function Navigation() {
             })}
             <div className="flex items-center gap-2 px-4 py-2">
               <ThemeToggle />
-              {/* <AdminLogin /> */}
+              {isAdmin && (
+                <button
+                  onClick={() => {
+                    logout()
+                    setIsOpen(false)
+                  }}
+                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 text-accent bg-accent/10 hover:bg-accent/20"
+                  aria-label="Logout Admin"
+                >
+                  <Shield className="w-4 h-4" />
+                  <span>Admin</span>
+                  <LogOut className="w-4 h-4" />
+                </button>
+              )}
             </div>
           </div>
         )}

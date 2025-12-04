@@ -129,7 +129,10 @@ class ApiClient {
     
     // Add API key header for write operations
     if (isWrite && apiKey) {
-      headers['X-API-Key'] = apiKey
+      const headers: Record<string, string> = {}
+      if (isWrite && apiKey) {
+        headers['X-API-Key'] = apiKey
+      }
     }
     
     const response = await fetch(`${this.baseUrl}${endpoint}`, {

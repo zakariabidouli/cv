@@ -26,11 +26,15 @@
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import APIKeyHeader
 from app.core.database import Base, engine
 from app.core.config import settings
 from app.routes import projects, experiences, contacts, skills, about, social_links, resume
 # Import all models to ensure they're registered
 from app.models import Project, Experience, Skill, SkillCategory, Contact, About, Stat, SocialLink, Resume
+
+# Define API Key security scheme for Swagger UI
+api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
 
 app = FastAPI(
     title="Zakaria Portfolio API",
@@ -40,6 +44,35 @@ app = FastAPI(
     redoc_url="/redoc",         # Optional: ReDoc alternative
     openapi_url="/openapi.json" # Schema endpoint
 )
+
+# Configure OpenAPI schema to include API Key authentication
+def custom_openapi():
+    if app.openapi_schema:
+        return app.openapi_schema
+    
+    from fastapi.openapi.utils import get_openapi
+    
+    openapi_schema = get_openapi(
+        title=app.title,
+        version=app.version,
+        description=app.description,
+        routes=app.routes,
+    )
+    
+    # Add security scheme for API Key
+    openapi_schema["components"]["securitySchemes"] = {
+        "ApiKeyAuth": {
+            "type": "apiKey",
+            "in": "header",
+            "name": "X-API-Key",
+            "description": "Enter your API key. Get it from the API_KEY environment variable."
+        }
+    }
+    
+    app.openapi_schema = openapi_schema
+    return app.openapi_schema
+
+app.openapi = custom_openapi
 
 # Enable CORS (for frontend connection)
 # CORS origins are configured via CORS_ORIGINS environment variable

@@ -132,7 +132,7 @@ export function About() {
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div className="space-y-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-semibold">About Content</h3>
+              {/* <h3 className="text-xl font-semibold">About Content</h3> */}
               {isAdmin && (
                 <button
                   onClick={() => {

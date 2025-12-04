@@ -3,7 +3,13 @@ import os
 from typing import List
 
 class Settings(BaseSettings):
+    # DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./test.db")
+    # DATABASE_URL: str = "postgresql://postgres:8+u%qaUZa@db.hepnvmfeuodqagrpjadt.supabase.co:5432/postgres"
     DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./test.db")
+    DB_POOL_SIZE: int = int(os.getenv("DB_POOL_SIZE", "5"))
+    DB_MAX_OVERFLOW: int = int(os.getenv("DB_MAX_OVERFLOW", "10"))
+    DB_POOL_TIMEOUT: int = int(os.getenv("DB_POOL_TIMEOUT", "30"))
+    DB_POOL_RECYCLE: int = int(os.getenv("DB_POOL_RECYCLE", "3600"))
     
     # CORS Configuration - comma-separated origins or "*" for all
     CORS_ORIGINS: str = os.getenv("CORS_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000")

@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 from app.core.database import get_db
+from app.core.auth import verify_api_key
 from app.models.contact import Contact
 from app.schemas.contact import Contact as ContactSchema, ContactCreate, ContactUpdate
 
@@ -21,7 +22,7 @@ def get_contact(contact_id: int, db: Session = Depends(get_db)):
     return contact
 
 @router.post("/", response_model=ContactSchema, status_code=201)
-def create_contact(contact: ContactCreate, db: Session = Depends(get_db)):
+def create_contact(contact: ContactCreate, db: Session = Depends(get_db), _: bool = Depends(verify_api_key)):
     """Create a new contact submission"""
     db_contact = Contact(**contact.model_dump())
     db.add(db_contact)
@@ -30,7 +31,7 @@ def create_contact(contact: ContactCreate, db: Session = Depends(get_db)):
     return db_contact
 
 @router.put("/{contact_id}", response_model=ContactSchema)
-def update_contact(contact_id: int, contact: ContactUpdate, db: Session = Depends(get_db)):
+def update_contact(contact_id: int, contact: ContactUpdate, db: Session = Depends(get_db), _: bool = Depends(verify_api_key)):
     """Update contact status"""
     db_contact = db.query(Contact).filter(Contact.id == contact_id).first()
     if not db_contact:
@@ -45,7 +46,7 @@ def update_contact(contact_id: int, contact: ContactUpdate, db: Session = Depend
     return db_contact
 
 @router.delete("/{contact_id}", status_code=204)
-def delete_contact(contact_id: int, db: Session = Depends(get_db)):
+def delete_contact(contact_id: int, db: Session = Depends(get_db), _: bool = Depends(verify_api_key)):
     """Delete a contact"""
     db_contact = db.query(Contact).filter(Contact.id == contact_id).first()
     if not db_contact:

@@ -108,14 +108,33 @@ class ApiClient {
     this.baseUrl = baseUrl
   }
 
+  private getApiKey(): string | undefined {
+    // Get API key from environment variable (same as admin password)
+    return process.env.NEXT_PUBLIC_ADMIN_PASSWORD || undefined
+  }
+
+  private isWriteOperation(method?: string): boolean {
+    return method === 'POST' || method === 'PUT' || method === 'DELETE'
+  }
+
   private async fetch<T>(endpoint: string, options?: RequestInit): Promise<T> {
     const isFormData = options?.body instanceof FormData
+    const isWrite = this.isWriteOperation(options?.method)
+    const apiKey = this.getApiKey()
+    
+    const headers: HeadersInit = {
+      ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
+      ...options?.headers,
+    }
+    
+    // Add API key header for write operations
+    if (isWrite && apiKey) {
+      headers['X-API-Key'] = apiKey
+    }
+    
     const response = await fetch(`${this.baseUrl}${endpoint}`, {
       ...options,
-      headers: {
-        ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
-        ...options?.headers,
-      },
+      headers,
     })
 
     if (!response.ok) {

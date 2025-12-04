@@ -8,6 +8,7 @@ import shutil
 import os
 
 from app.core.database import get_db
+from app.core.auth import verify_api_key
 from app.models.resume import Resume as ResumeModel
 from app.schemas.resume import Resume as ResumeSchema
 
@@ -58,6 +59,7 @@ def upload_resume(
     request: Request,
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
+    _: bool = Depends(verify_api_key),
 ):
     """Upload a new resume PDF. Stores file on disk and metadata in DB."""
     if not file.filename.lower().endswith(".pdf"):
@@ -92,7 +94,7 @@ def upload_resume(
 
 
 @router.delete("/{resume_id}", status_code=204)
-def delete_resume(resume_id: int, db: Session = Depends(get_db)):
+def delete_resume(resume_id: int, db: Session = Depends(get_db), _: bool = Depends(verify_api_key)):
     """Delete a resume and its file from disk."""
     resume = db.query(ResumeModel).filter(ResumeModel.id == resume_id).first()
     if not resume:

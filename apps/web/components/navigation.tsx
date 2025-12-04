@@ -24,22 +24,38 @@ export function Navigation() {
     const handleScroll = () => {
       const sections = navItems.map((item) => item.href.substring(1))
       const scrollPosition = window.scrollY + 100
+      const windowHeight = window.innerHeight
+      const documentHeight = document.documentElement.scrollHeight
 
-      const firstSection = document.getElementById(sections[0]);
+      // Check if we're at the very top (before first section)
+      const firstSection = document.getElementById(sections[0])
       if (firstSection && scrollPosition < firstSection.offsetTop) {
-        setActiveSection('');
-        return;
+        setActiveSection('')
+        return
       }
 
-      for (const section of sections) {
+      // Check if we're at the bottom of the page - activate last section
+      if (scrollPosition + windowHeight >= documentHeight - 50) {
+        const lastSection = sections[sections.length - 1]
+        const lastElement = document.getElementById(lastSection)
+        if (lastElement) {
+          setActiveSection(lastSection)
+          return
+        }
+      }
+
+      // Check sections in reverse order to catch the correct one
+      // This ensures we match the section we're actually in, not just passed
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const section = sections[i]
         const element = document.getElementById(section)
         if (element) {
           const { offsetTop, offsetHeight } = element
-          if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
+          // Check if scroll position is within this section's bounds
+          if (scrollPosition >= offsetTop - 100 && scrollPosition < offsetTop + offsetHeight) {
             setActiveSection(section)
-            break
+            return
           }
-          
         }
       }
     }
@@ -57,10 +73,15 @@ export function Navigation() {
           <div className="flex-shrink-0">
             <Link
               href="#"
-              className="text-xl font-bold bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent hover:opacity-80 transition-opacity"
+              onClick={(e) => {
+                e.preventDefault()
+                window.scrollTo({ top: 0, behavior: 'smooth' })
+                setActiveSection('')
+              }}
+              className="text-xxl font-bold bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent hover:opacity-80 transition-opacity cursor-pointer"
               aria-label="Home"
             >
-              Z.Bidouli
+              Z.bidouli
             </Link>
           </div>
 

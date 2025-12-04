@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 from app.core.database import get_db
+from app.core.auth import verify_api_key
 from app.models.about import About, Stat
 from app.schemas.about import (
     About as AboutSchema, 
@@ -29,7 +30,7 @@ def get_about(about_id: int, db: Session = Depends(get_db)):
     return about
 
 @router.post("/content", response_model=AboutSchema, status_code=201)
-def create_about(about: AboutCreate, db: Session = Depends(get_db)):
+def create_about(about: AboutCreate, db: Session = Depends(get_db), _: bool = Depends(verify_api_key)):
     """Create a new about section"""
     db_about = About(**about.model_dump())
     db.add(db_about)
@@ -38,7 +39,7 @@ def create_about(about: AboutCreate, db: Session = Depends(get_db)):
     return db_about
 
 @router.put("/content/{about_id}", response_model=AboutSchema)
-def update_about(about_id: int, about: AboutUpdate, db: Session = Depends(get_db)):
+def update_about(about_id: int, about: AboutUpdate, db: Session = Depends(get_db), _: bool = Depends(verify_api_key)):
     """Update an about section"""
     db_about = db.query(About).filter(About.id == about_id).first()
     if not db_about:
@@ -53,7 +54,7 @@ def update_about(about_id: int, about: AboutUpdate, db: Session = Depends(get_db
     return db_about
 
 @router.delete("/content/{about_id}", status_code=204)
-def delete_about(about_id: int, db: Session = Depends(get_db)):
+def delete_about(about_id: int, db: Session = Depends(get_db), _: bool = Depends(verify_api_key)):
     """Delete an about section"""
     db_about = db.query(About).filter(About.id == about_id).first()
     if not db_about:
@@ -78,7 +79,7 @@ def get_stat(stat_id: int, db: Session = Depends(get_db)):
     return stat
 
 @router.post("/stats", response_model=StatSchema, status_code=201)
-def create_stat(stat: StatCreate, db: Session = Depends(get_db)):
+def create_stat(stat: StatCreate, db: Session = Depends(get_db), _: bool = Depends(verify_api_key)):
     """Create a new stat"""
     db_stat = Stat(**stat.model_dump())
     db.add(db_stat)
@@ -87,7 +88,7 @@ def create_stat(stat: StatCreate, db: Session = Depends(get_db)):
     return db_stat
 
 @router.put("/stats/{stat_id}", response_model=StatSchema)
-def update_stat(stat_id: int, stat: StatUpdate, db: Session = Depends(get_db)):
+def update_stat(stat_id: int, stat: StatUpdate, db: Session = Depends(get_db), _: bool = Depends(verify_api_key)):
     """Update a stat"""
     db_stat = db.query(Stat).filter(Stat.id == stat_id).first()
     if not db_stat:
@@ -102,7 +103,7 @@ def update_stat(stat_id: int, stat: StatUpdate, db: Session = Depends(get_db)):
     return db_stat
 
 @router.delete("/stats/{stat_id}", status_code=204)
-def delete_stat(stat_id: int, db: Session = Depends(get_db)):
+def delete_stat(stat_id: int, db: Session = Depends(get_db), _: bool = Depends(verify_api_key)):
     """Delete a stat"""
     db_stat = db.query(Stat).filter(Stat.id == stat_id).first()
     if not db_stat:

@@ -40,11 +40,29 @@ export async function proxyRequest(
     headers.set('X-API-Key', API_KEY)
   }
 
-  const response = await fetch(`${BACKEND_API_URL}${endpoint}`, {
-    ...options,
-    headers,
-  })
+  try {
+    const response = await fetch(`${BACKEND_API_URL}${endpoint}`, {
+      ...options,
+      headers,
+    })
 
-  return response
+    // Forward the response as-is (including error statuses)
+    return response
+  } catch (error) {
+    // Handle network errors or fetch failures
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+    console.error(`Proxy request failed to ${BACKEND_API_URL}${endpoint}:`, errorMessage)
+    
+    return new Response(
+      JSON.stringify({ 
+        error: `Failed to connect to backend API: ${errorMessage}`,
+        details: `Check if API_URL is set correctly. Current: ${BACKEND_API_URL}`
+      }),
+      {
+        status: 503,
+        headers: { 'Content-Type': 'application/json' },
+      }
+    )
+  }
 }
 

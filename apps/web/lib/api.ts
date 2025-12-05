@@ -116,8 +116,20 @@ class ApiClient {
     })
 
     if (!response.ok) {
-      const errorText = await response.text().catch(() => response.statusText)
-      throw new Error(`API error: ${errorText || response.statusText}`)
+      let errorMessage = response.statusText
+      try {
+        const errorData = await response.json()
+        errorMessage = errorData.error || errorData.message || JSON.stringify(errorData)
+      } catch {
+        // If not JSON, try to get text
+        try {
+          const errorText = await response.text()
+          errorMessage = errorText || response.statusText
+        } catch {
+          errorMessage = response.statusText
+        }
+      }
+      throw new Error(`API error: ${errorMessage} (Status: ${response.status})`)
     }
 
     // Handle 204 No Content (DELETE requests)

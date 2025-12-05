@@ -4,20 +4,22 @@ import { proxyRequest } from '@/lib/api-proxy'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const cookieStore = await cookies()
-  const response = await proxyRequest(`/social-links/${params.id}`, {}, false, cookieStore)
+  const { id } = await params
+  const response = await proxyRequest(`/social-links/${id}`, {}, false, cookieStore)
   return response
 }
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const cookieStore = await cookies()
+  const { id } = await params
   const body = await request.text()
-  const response = await proxyRequest(`/social-links/${params.id}`, {
+  const response = await proxyRequest(`/social-links/${id}`, {
     method: 'PUT',
     body,
     headers: { 'Content-Type': 'application/json' },
@@ -27,10 +29,11 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const cookieStore = await cookies()
-  const response = await proxyRequest(`/social-links/${params.id}`, {
+  const { id } = await params
+  const response = await proxyRequest(`/social-links/${id}`, {
     method: 'DELETE',
   }, true, cookieStore)
   return response

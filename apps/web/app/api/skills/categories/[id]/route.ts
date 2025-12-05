@@ -4,11 +4,12 @@ import { proxyRequest } from '@/lib/api-proxy'
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const cookieStore = await cookies()
+  const { id } = await params
   const body = await request.text()
-  const response = await proxyRequest(`/skills/categories/${params.id}`, {
+  const response = await proxyRequest(`/skills/categories/${id}`, {
     method: 'PUT',
     body,
     headers: { 'Content-Type': 'application/json' },
@@ -18,10 +19,11 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const cookieStore = await cookies()
-  const response = await proxyRequest(`/skills/categories/${params.id}`, {
+  const { id } = await params
+  const response = await proxyRequest(`/skills/categories/${id}`, {
     method: 'DELETE',
   }, true, cookieStore)
   return response

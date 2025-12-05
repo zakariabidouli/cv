@@ -4,10 +4,11 @@ import { proxyRequest } from '@/lib/api-proxy'
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const cookieStore = await cookies()
-  const response = await proxyRequest(`/resume/${params.id}`, {
+  const { id } = await params
+  const response = await proxyRequest(`/resume/${id}`, {
     method: 'DELETE',
   }, true, cookieStore)
   return response

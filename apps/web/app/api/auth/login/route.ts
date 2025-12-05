@@ -1,13 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123'
+const API_KEY = process.env.API_KEY || ''
 
 export async function POST(request: NextRequest) {
   try {
     const { password } = await request.json()
     
-    if (password === ADMIN_PASSWORD) {
+    // Use API_KEY as admin password (must match Railway API_KEY)
+    if (!API_KEY) {
+      return NextResponse.json({ error: 'API key not configured' }, { status: 500 })
+    }
+    
+    if (password === API_KEY) {
       const cookieStore = await cookies()
       cookieStore.set('admin_session', 'authenticated', {
         httpOnly: true,

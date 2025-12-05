@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     # Optional: API Secret Key for future authentication
     API_SECRET_KEY: str = os.getenv("API_SECRET_KEY", "")
     
-    # API Key for authentication (should match NEXT_PUBLIC_ADMIN_PASSWORD from frontend)
+    # API Key for authentication (must match API_KEY in frontend/Vercel)
     API_KEY: str = os.getenv("API_KEY", "")
     
     # Optional: Logging level

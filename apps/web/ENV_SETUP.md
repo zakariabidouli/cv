@@ -5,57 +5,44 @@
 Create a `.env.local` file in the `/apps/web/` directory with the following content:
 
 ```env
-NEXT_PUBLIC_API_URL=http://localhost:8000
-NEXT_PUBLIC_ADMIN_PASSWORD=your-secure-password-here
+# Backend API URL (server-side only, not exposed to browser)
+API_URL=http://localhost:8000
+
+# API Key (server-side only, never exposed to browser)
+API_KEY=your-secure-api-key-here
+
+# Admin password for login (server-side only)
+ADMIN_PASSWORD=your-secure-password-here
 ```
-
-## For Docker
-
-If running in Docker, the API URL should point to the API service:
-
-```env
-NEXT_PUBLIC_API_URL=http://localhost:8000
-```
-
-Note: Even in Docker, use `localhost:8000` because the browser makes the request, not the container.
 
 ## For Production
 
-Update the URL to your production API:
+Update the URLs to your production endpoints:
 
 ```env
-NEXT_PUBLIC_API_URL=https://api.yourdomain.com
+API_URL=https://your-api.railway.app
+API_KEY=your-secure-api-key-here
+ADMIN_PASSWORD=your-secure-password-here
 ```
-
-## Verification
-
-The API client in `lib/api.ts` is already configured to use this environment variable:
-
-```typescript
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
-```
-
-It will:
-1. Use `NEXT_PUBLIC_API_URL` if set
-2. Fall back to `http://localhost:8000` if not set
-
-## Admin Authentication
-
-The admin login feature uses the `NEXT_PUBLIC_ADMIN_PASSWORD` environment variable:
-
-```env
-NEXT_PUBLIC_ADMIN_PASSWORD=your-secure-password-here
-```
-
-- **Default password**: If not set, the default password is `admin123` (change this in production!)
-- **Security**: Use a strong password in production
-- **Access**: Click the "Admin" button in the navigation bar to login
-- **Persistence**: Admin session is stored in localStorage and persists across page refreshes
 
 ## Important Notes
 
-- The `NEXT_PUBLIC_` prefix is required for Next.js to expose the variable to the browser
-- Restart the Next.js dev server after creating/modifying `.env.local`
+- **API_KEY** and **ADMIN_PASSWORD** should match the same values set in your backend API
+- These environment variables are **server-side only** and **never exposed to the browser**
+- The frontend uses Next.js API routes (`/api/*`) which proxy requests to the backend
+- All authentication is handled via HTTP-only cookies
 - `.env.local` is gitignored and won't be committed
-- **Change the default admin password** before deploying to production!
 
+## Security
+
+- ✅ API key is stored server-side only
+- ✅ Admin password is stored server-side only
+- ✅ Authentication uses HTTP-only cookies
+- ✅ No sensitive data exposed to browser
+
+## Admin Authentication
+
+1. Click the "Admin" button in the navigation bar
+2. Enter your admin password
+3. Session is stored in an HTTP-only cookie (7 days)
+4. Click "Logout" to end your session

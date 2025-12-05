@@ -16,10 +16,7 @@ export function AdminLogin() {
     setError("")
     setLoading(true)
 
-    // Small delay for better UX
-    await new Promise((resolve) => setTimeout(resolve, 300))
-
-    const success = login(password)
+    const success = await login(password)
     if (success) {
       setShowModal(false)
       setPassword("")
@@ -29,8 +26,8 @@ export function AdminLogin() {
     setLoading(false)
   }
 
-  const handleLogout = () => {
-    logout()
+  const handleLogout = async () => {
+    await logout()
     setShowModal(false)
   }
 

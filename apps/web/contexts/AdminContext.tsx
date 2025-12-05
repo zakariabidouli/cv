@@ -4,46 +4,67 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 
 interface AdminContextType {
   isAdmin: boolean
-  login: (password: string) => boolean
-  logout: () => void
+  login: (password: string) => Promise<boolean>
+  logout: () => Promise<void>
   isAuthenticated: boolean
 }
 
 const AdminContext = createContext<AdminContextType | undefined>(undefined)
 
-const ADMIN_STORAGE_KEY = "portfolio_admin_authenticated"
-const ADMIN_PASSWORD_KEY = "portfolio_admin_password"
-
 export function AdminProvider({ children }: { children: ReactNode }) {
   const [isAdmin, setIsAdmin] = useState(false)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
 
-  // Check localStorage on mount
+  // Check session on mount
   useEffect(() => {
-    const stored = localStorage.getItem(ADMIN_STORAGE_KEY)
-    if (stored === "true") {
-      setIsAdmin(true)
-      setIsAuthenticated(true)
-    }
+    checkAuth()
   }, [])
 
-  const login = (password: string): boolean => {
-    // Get password from environment variable or use default
-    const adminPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || "admin123"
-    
-    if (password === adminPassword) {
-      setIsAdmin(true)
-      setIsAuthenticated(true)
-      localStorage.setItem(ADMIN_STORAGE_KEY, "true")
-      return true
+  const checkAuth = async () => {
+    try {
+      const res = await fetch('/api/auth/check', { credentials: 'include' })
+      const data = await res.json()
+      if (data.authenticated) {
+        setIsAdmin(true)
+        setIsAuthenticated(true)
+      }
+    } catch {
+      setIsAdmin(false)
+      setIsAuthenticated(false)
     }
-    return false
   }
 
-  const logout = () => {
+  const login = async (password: string): Promise<boolean> => {
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ password }),
+      })
+      
+      if (res.ok) {
+        setIsAdmin(true)
+        setIsAuthenticated(true)
+        return true
+      }
+      return false
+    } catch {
+      return false
+    }
+  }
+
+  const logout = async () => {
+    try {
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include',
+      })
+    } catch {
+      // Ignore errors
+    }
     setIsAdmin(false)
     setIsAuthenticated(false)
-    localStorage.removeItem(ADMIN_STORAGE_KEY)
   }
 
   return (

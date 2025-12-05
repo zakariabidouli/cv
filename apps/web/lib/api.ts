@@ -1,11 +1,6 @@
 // API Configuration
-// Uses NEXT_PUBLIC_API_URL from .env.local, falls back to localhost:8000
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
-
-// Log API URL in development (helps with debugging)
-if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
-  console.log('API Base URL:', API_BASE_URL)
-}
+// Uses Next.js API routes (server-side proxy)
+const API_BASE_URL = '/api'
 
 // Types matching backend schemas
 export interface Project {
@@ -108,33 +103,16 @@ class ApiClient {
     this.baseUrl = baseUrl
   }
 
-  private getApiKey(): string | undefined {
-    // Get API key from environment variable (same as admin password)
-    return process.env.NEXT_PUBLIC_ADMIN_PASSWORD || undefined
-  }
-
-  private isWriteOperation(method?: string): boolean {
-    return method === 'POST' || method === 'PUT' || method === 'DELETE'
-  }
-
   private async fetch<T>(endpoint: string, options?: RequestInit): Promise<T> {
-    const isFormData = options?.body instanceof FormData
-    const isWrite = this.isWriteOperation(options?.method)
-    const apiKey = this.getApiKey()
-    
     const headers: HeadersInit = {
-      ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
+      ...(options?.body instanceof FormData ? {} : { 'Content-Type': 'application/json' }),
       ...options?.headers,
-    }
-    
-    // Add API key header for write operations
-    if (isWrite && apiKey) {
-      (headers as Record<string, string>)['X-API-Key'] = apiKey
     }
     
     const response = await fetch(`${this.baseUrl}${endpoint}`, {
       ...options,
       headers,
+      credentials: 'include', // Include cookies for session
     })
 
     if (!response.ok) {
@@ -340,13 +318,13 @@ class ApiClient {
 
   // Resume
   async getLatestResume(): Promise<Resume | null> {
-    return this.fetch<Resume | null>('/resume/latest')
+    return this.fetch<Resume | null>('/resume')
   }
 
   async uploadResume(file: File): Promise<Resume> {
     const formData = new FormData()
     formData.append('file', file)
-    return this.fetch<Resume>('/resume/', {
+    return this.fetch<Resume>('/resume', {
       method: 'POST',
       body: formData,
     })

@@ -41,7 +41,31 @@ export async function proxyRequest(
   }
 
   try {
-    const response = await fetch(`${BACKEND_API_URL}${endpoint}`, {
+    // Ensure BACKEND_API_URL is set
+    if (!BACKEND_API_URL || BACKEND_API_URL.trim() === '') {
+      console.error('❌ API_URL environment variable is not set!')
+      return new Response(
+        JSON.stringify({ 
+          error: 'API_URL not configured',
+          details: 'Set API_URL environment variable in Vercel to your Railway API URL'
+        }),
+        {
+          status: 500,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      )
+    }
+    
+    // Remove trailing slash from BACKEND_API_URL
+    const baseUrl = BACKEND_API_URL.trim().replace(/\/+$/, '')
+    // Ensure endpoint starts with /
+    const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`
+    const fullUrl = `${baseUrl}${cleanEndpoint}`
+    
+    // Log in all environments for debugging
+    console.log(`🔗 Proxying to: ${fullUrl}`)
+    
+    const response = await fetch(fullUrl, {
       ...options,
       headers,
     })
@@ -51,12 +75,22 @@ export async function proxyRequest(
   } catch (error) {
     // Handle network errors or fetch failures
     const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-    console.error(`Proxy request failed to ${BACKEND_API_URL}${endpoint}:`, errorMessage)
+    const fullUrl = `${BACKEND_API_URL}${endpoint}`
+    
+    console.error(`❌ Proxy request failed:`)
+    console.error(`   URL: ${fullUrl}`)
+    console.error(`   Error: ${errorMessage}`)
+    console.error(`   API_URL env: ${BACKEND_API_URL || 'NOT SET'}`)
     
     return new Response(
       JSON.stringify({ 
         error: `Failed to connect to backend API: ${errorMessage}`,
-        details: `Check if API_URL is set correctly. Current: ${BACKEND_API_URL}`
+        details: `Unable to reach ${BACKEND_API_URL}${endpoint}`,
+        troubleshooting: {
+          checkApiUrl: 'Verify API_URL is set in Vercel environment variables',
+          checkBackend: 'Verify backend API is running and accessible',
+          currentApiUrl: BACKEND_API_URL || 'NOT SET'
+        }
       }),
       {
         status: 503,

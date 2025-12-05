@@ -53,9 +53,13 @@ export function Contact() {
     }
   }
 
+  const linkedinClick = () => {
+    window.open('https://www.linkedin.com/in/zakariabidouli', '_blank');
+  };
+
   return (
     <section id="contact" className="relative py-24 px-4 sm:px-6 lg:px-8 bg-secondary/30">
-      <SectionBackground variant="dots" />
+      <SectionBackground variant="dots" angle={50} />
       <div className="relative max-w-4xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-4xl sm:text-5xl font-bold mb-4 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
@@ -72,14 +76,14 @@ export function Contact() {
             </div>
             <h3 className="font-bold text-lg mb-2 text-foreground">Email</h3>
             <a
-              href="mailto:bidouliwork@gmail.com"
+              href="mailto:bidouli.zak@gmail.com"
               className="text-muted-foreground hover:text-accent transition-colors"
-              aria-label="Send email to bidouliwork@gmail.com"
+              aria-label="Send email to bidouli.zak@gmail.com"
             >
-              bidouliwork@gmail.com
+              bidouli.zak@gmail.com
             </a>
           </div>
-          <div className="group p-6 bg-card border border-border rounded-xl hover:border-accent/50 transition-all duration-300 hover:shadow-lg hover:shadow-accent/10 hover:-translate-y-1">
+          <div onClick={linkedinClick} className="group p-6 bg-card border border-border rounded-xl hover:border-accent/50 transition-all duration-300 hover:shadow-lg hover:shadow-accent/10 hover:-translate-y-1">
             <div className="p-3 bg-accent/10 border border-accent/20 rounded-lg w-fit mb-4 group-hover:bg-accent/20 transition-colors">
               <MessageSquare className="w-6 h-6 text-accent" />
             </div>

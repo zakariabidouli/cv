@@ -100,33 +100,18 @@ export function About() {
     )
   }
 
-  if (error) {
-    return (
-      <section id="about" className="relative py-24 px-4 sm:px-6 lg:px-8">
-        <SectionBackground variant="grid"/>
-        <div className="relative max-w-5xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl sm:text-5xl font-bold mb-4">About Me</h2>
-            <div className="w-16 h-1 bg-gradient-to-r from-accent via-primary to-accent mx-auto rounded-full"></div>
-          </div>
-          <div className="text-center text-destructive bg-destructive/10 border border-destructive/20 rounded-lg p-4">
-            Error: {error}
-          </div>
-        </div>
-      </section>
-    )
-  }
+  // Dummy data is handled by hooks - show about/stats (will be dummy if error)
 
   return (
     <section id="about" className="relative py-24 px-4 sm:px-6 lg:px-8 bg-secondary/20">
-      <SectionBackground variant="dots" />
+      <SectionBackground variant="dots" angle={10} />
       <div className="relative max-w-5xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-4xl sm:text-5xl font-bold mb-4 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
             About Me
           </h2>
           <div className="w-16 h-1 bg-gradient-to-r from-accent via-primary to-accent mx-auto rounded-full"></div>
-          <p className="text-muted-foreground mt-6 text-lg">Get to know me better</p>
+          {/* <p className="text-muted-foreground mt-6 text-lg">Get to know me better</p> */}
         </div>
 
         <div className="grid md:grid-cols-2 gap-12 items-center">
@@ -225,7 +210,7 @@ export function About() {
 
           <div>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-semibold">Statistics</h3>
+              {/* <h3 className="text-xl font-semibold">Statistics</h3> */}
               {isAdmin && (
                 <button
                   onClick={() => {

@@ -6,9 +6,10 @@ type PatternVariant = "hero" | "hexagons" | "grid" | "circles" | "waves" | "dots
 interface SectionBackgroundProps {
   variant?: PatternVariant
   opacity?: string
+  angle?: number
 }
 
-export function SectionBackground({ variant = "hexagons", opacity = "0" }: SectionBackgroundProps) {
+export function SectionBackground({ variant = "hexagons", opacity = "0", angle }: SectionBackgroundProps) {
   const opacityStyle = { opacity: parseFloat(opacity) }
 
   // Hero Pattern - Dynamic flowing shapes
@@ -160,7 +161,8 @@ export function SectionBackground({ variant = "hexagons", opacity = "0" }: Secti
     return (
       <div 
         className="absolute inset-0 overflow-hidden pointer-events-none">
-        <RetroGrid angle={89} />
+          <div className="absolute inset-0 bg-gradient-to-b from-background via-background/80 to-transparent" />
+        <RetroGrid angle={angle} />
       </div>
     )
   }

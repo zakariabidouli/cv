@@ -2,10 +2,11 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import { api, Project, Experience, SkillCategory, About, Stat, SocialLink, Contact, Resume } from './api'
+import { dummyProjects, dummyExperiences, dummySkillCategories, dummyAbout, dummyStats, dummySocialLinks } from './dummy-data'
 
 // Custom hook for fetching projects
 export function useProjects() {
-  const [projects, setProjects] = useState<Project[]>([])
+  const [projects, setProjects] = useState<Project[]>(dummyProjects)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -13,11 +14,13 @@ export function useProjects() {
     try {
       setLoading(true)
       const data = await api.getProjects()
-      setProjects(data)
+      setProjects(data.length > 0 ? data : dummyProjects)
       setError(null)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch projects')
       console.error('Error fetching projects:', err)
+      // Use dummy data on error
+      setProjects(dummyProjects)
+      setError(null)
     } finally {
       setLoading(false)
     }
@@ -28,11 +31,13 @@ export function useProjects() {
       try {
         setLoading(true)
         const data = await api.getProjects()
-        setProjects(data)
+        setProjects(data.length > 0 ? data : dummyProjects)
         setError(null)
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch projects')
         console.error('Error fetching projects:', err)
+        // Use dummy data on error
+        setProjects(dummyProjects)
+        setError(null)
       } finally {
         setLoading(false)
       }
@@ -46,7 +51,7 @@ export function useProjects() {
 
 // Custom hook for fetching experiences
 export function useExperiences() {
-  const [experiences, setExperiences] = useState<Experience[]>([])
+  const [experiences, setExperiences] = useState<Experience[]>(dummyExperiences)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -54,11 +59,13 @@ export function useExperiences() {
     try {
       setLoading(true)
       const data = await api.getExperiences()
-      setExperiences(data)
+      setExperiences(data.length > 0 ? data : dummyExperiences)
       setError(null)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch experiences')
       console.error('Error fetching experiences:', err)
+      // Use dummy data on error
+      setExperiences(dummyExperiences)
+      setError(null)
     } finally {
       setLoading(false)
     }
@@ -69,11 +76,13 @@ export function useExperiences() {
       try {
         setLoading(true)
         const data = await api.getExperiences()
-        setExperiences(data)
+        setExperiences(data.length > 0 ? data : dummyExperiences)
         setError(null)
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch experiences')
         console.error('Error fetching experiences:', err)
+        // Use dummy data on error
+        setExperiences(dummyExperiences)
+        setError(null)
       } finally {
         setLoading(false)
       }
@@ -87,7 +96,7 @@ export function useExperiences() {
 
 // Custom hook for fetching skills
 export function useSkills() {
-  const [categories, setCategories] = useState<SkillCategory[]>([])
+  const [categories, setCategories] = useState<SkillCategory[]>(dummySkillCategories)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -96,11 +105,13 @@ export function useSkills() {
       try {
         setLoading(true)
         const data = await api.getSkillCategories()
-        setCategories(data)
+        setCategories(data.length > 0 ? data : dummySkillCategories)
         setError(null)
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch skills')
         console.error('Error fetching skills:', err)
+        // Use dummy data on error
+        setCategories(dummySkillCategories)
+        setError(null)
       } finally {
         setLoading(false)
       }
@@ -113,11 +124,13 @@ export function useSkills() {
     try {
       setLoading(true)
       const data = await api.getSkillCategories()
-      setCategories(data)
+      setCategories(data.length > 0 ? data : dummySkillCategories)
       setError(null)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch skills')
       console.error('Error fetching skills:', err)
+      // Use dummy data on error
+      setCategories(dummySkillCategories)
+      setError(null)
     } finally {
       setLoading(false)
     }
@@ -128,8 +141,8 @@ export function useSkills() {
 
 // Custom hook for fetching about content
 export function useAbout() {
-  const [about, setAbout] = useState<About[]>([])
-  const [stats, setStats] = useState<Stat[]>([])
+  const [about, setAbout] = useState<About[]>(dummyAbout)
+  const [stats, setStats] = useState<Stat[]>(dummyStats)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -140,12 +153,15 @@ export function useAbout() {
         api.getAboutContent(),
         api.getStats(),
       ])
-      setAbout(aboutData)
-      setStats(statsData)
+      setAbout(aboutData.length > 0 ? aboutData : dummyAbout)
+      setStats(statsData.length > 0 ? statsData : dummyStats)
       setError(null)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch about content')
       console.error('Error fetching about:', err)
+      // Use dummy data on error
+      setAbout(dummyAbout)
+      setStats(dummyStats)
+      setError(null)
     } finally {
       setLoading(false)
     }
@@ -160,7 +176,7 @@ export function useAbout() {
 
 // Custom hook for fetching social links
 export function useSocialLinks() {
-  const [links, setLinks] = useState<SocialLink[]>([])
+  const [links, setLinks] = useState<SocialLink[]>(dummySocialLinks)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -169,10 +185,13 @@ export function useSocialLinks() {
       try {
         setLoading(true)
         const data = await api.getSocialLinks()
-        setLinks(data)
+        setLinks(data.length > 0 ? data : dummySocialLinks)
+        setError(null)
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch social links')
         console.error('Error fetching social links:', err)
+        // Use dummy data on error
+        setLinks(dummySocialLinks)
+        setError(null)
       } finally {
         setLoading(false)
       }

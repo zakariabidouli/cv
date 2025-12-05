@@ -74,7 +74,7 @@ export function Skills() {
   }
 
   const sectionHeader = (
-    <div className="text-center mb-16 w-full">
+    <div className="text-center mb-16 w-full z-10">
       <h2 className="text-4xl sm:text-5xl font-bold mb-4 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
         Skills & Technologies
       </h2>
@@ -83,30 +83,7 @@ export function Skills() {
     </div>
   )
 
-  if (loading) {
-    return (
-      <section id="skills" className="relative py-24 px-4 sm:px-6 lg:px-8">
-        <div className="relative max-w-5xl mx-auto">
-          {sectionHeader}
-          <div className="text-center text-muted-foreground">Loading skills...</div>
-        </div>
-      </section>
-    )
-  }
-
-  if (error) {
-    return (
-      <section id="skills" className="relative py-24 px-4 sm:px-6 lg:px-8">
-        <SectionBackground variant="hexagons" />
-        <div className="relative max-w-5xl mx-auto">
-          {sectionHeader}
-          <div className="text-center text-destructive bg-destructive/10 border border-destructive/20 rounded-lg p-4">
-            Error: {error}
-          </div>
-        </div>
-      </section>
-    )
-  }
+  // Dummy data is handled by hooks - show categories (will be dummy if error)
 
   if (!categories || categories.length === 0) {
     return (
@@ -170,7 +147,7 @@ export function Skills() {
 
   return ( 
     <section id="skills" className="relative py-24 px-4 sm:px-6 lg:px-8 bg-secondary/30">
-      <SectionBackground variant="dots" />
+      <SectionBackground variant="dots" angle={40}/>
       <div className="max-w-5xl mx-auto">
         <div className="flex items-center justify-between mb-12">
           {sectionHeader}

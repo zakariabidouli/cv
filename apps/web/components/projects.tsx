@@ -272,39 +272,7 @@ export function Projects() {
     }
   }
 
-  if (loading) {
-    return (
-      <section id="projects" className="relative py-24 px-4 sm:px-6 lg:px-8 bg-secondary/30">
-        <SectionBackground variant="hexagons" />
-        <div className="relative max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl sm:text-5xl font-bold mb-4 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
-              Featured Projects
-            </h2>
-            <div className="w-16 h-1 bg-gradient-to-r from-accent via-primary to-accent mx-auto rounded-full"></div>
-            <p className="text-muted-foreground mt-6 text-lg">Loading projects...</p>
-          </div>
-        </div>
-      </section>
-    )
-  }
-
-  if (error) {
-    return (
-      <section id="projects" className="relative py-24 px-4 sm:px-6 lg:px-8 bg-secondary/30">
-        <SectionBackground variant="hexagons" />
-        <div className="relative max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl sm:text-5xl font-bold mb-4">Featured Projects</h2>
-            <div className="w-16 h-1 bg-gradient-to-r from-accent via-primary to-accent mx-auto rounded-full"></div>
-          </div>
-          <div className="text-center text-destructive bg-destructive/10 border border-destructive/20 rounded-lg p-4">
-            Error: {error}
-          </div>
-        </div>
-      </section>
-    )
-  }
+  // Dummy data is handled by hooks - always show projects (dummy data if API fails)
 
   const sectionHeader = (
     <div className="text-center mb-16">
@@ -316,99 +284,10 @@ export function Projects() {
     </div>
   )
 
-  if (!projects || projects.length === 0) {
-    return (
-      <section id="projects" className="relative py-24 px-4 sm:px-6 lg:px-8 bg-secondary/30">
-        <SectionBackground variant="hexagons" />
-        <div className="relative max-w-6xl mx-auto">
-          <div className="relative mb-12">
-            {sectionHeader}
-            {isAdmin && (
-              <button
-                onClick={() => setShowForm((v) => !v)}
-                title="Add Project"
-                className="absolute top-0 right-0 p-3 bg-accent/10 border border-accent/20 rounded-lg hover:bg-accent/20 hover:border-accent/40 transition-all duration-200"
-                aria-label="Add new project"
-              >
-                <Plus className="w-5 h-5 text-accent" />
-              </button>
-            )}
-          </div>
-          {isAdmin && showForm && (
-            <form onSubmit={handleCreate} className="mb-10 grid gap-4 p-6 border border-border rounded-xl bg-card shadow-lg">
-              <div className="grid md:grid-cols-2 gap-4">
-                <input
-                  required
-                  placeholder="Title"
-                  className="px-4 py-3 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent transition-all"
-                  value={form.title}
-                  onChange={(e) => setForm({ ...form, title: e.target.value })}
-                />
-                <input
-                  placeholder="Image URL"
-                  className="px-4 py-3 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent transition-all"
-                  value={form.image}
-                  onChange={(e) => setForm({ ...form, image: e.target.value })}
-                />
-              </div>
-              <textarea
-                required
-                placeholder="Description"
-                rows={4}
-                className="px-4 py-3 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent transition-all resize-none"
-                value={form.description}
-                onChange={(e) => setForm({ ...form, description: e.target.value })}
-              />
-              <div className="grid md:grid-cols-3 gap-4">
-                <input
-                  placeholder="Live URL"
-                  className="px-4 py-3 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent transition-all"
-                  value={form.live_url}
-                  onChange={(e) => setForm({ ...form, live_url: e.target.value })}
-                />
-                <input
-                  placeholder="GitHub URL"
-                  className="px-4 py-3 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent transition-all"
-                  value={form.github_url}
-                  onChange={(e) => setForm({ ...form, github_url: e.target.value })}
-                />
-                <input
-                  placeholder="Tags (comma-separated)"
-                  className="px-4 py-3 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent transition-all"
-                  value={form.tags}
-                  onChange={(e) => setForm({ ...form, tags: e.target.value })}
-                />
-              </div>
-              <div className="flex gap-3 justify-end">
-                <button
-                  type="button"
-                  onClick={() => setShowForm(false)}
-                  className="px-6 py-2.5 border border-border rounded-lg hover:bg-secondary transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={creating}
-                  className="px-6 py-2.5 bg-accent text-accent-foreground rounded-lg font-medium hover:shadow-lg hover:shadow-accent/30 transition-all disabled:opacity-50"
-                >
-                  {creating ? "Creating..." : "Create Project"}
-                </button>
-              </div>
-            </form>
-          )}
-          <div className="text-center text-muted-foreground py-12 bg-card border border-border rounded-xl">
-            No projects found.
-          </div>
-        </div>
-      </section>
-    )
-  }
-
   return (
     <>
       <section id="projects" className="relative py-24 px-4 sm:px-6 lg:px-8 bg-secondary/30">
-        <SectionBackground variant="dots" />
+        <SectionBackground variant="dots" angle={30}/>
         <div className="relative max-w-6xl mx-auto">
           <div className="relative mb-12">
             {sectionHeader}

@@ -85,40 +85,16 @@ export function Experience() {
   }
 
   const sectionHeader = (
-    <div className="text-center mb-16">
+    <div className="text-center mb-16 z-10">
       <h2 className="text-4xl sm:text-5xl font-bold mb-4 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
         Professional Experience
       </h2>
       <div className="w-16 h-1 bg-gradient-to-r from-accent via-primary to-accent mx-auto rounded-full"></div>
-      <p className="text-muted-foreground mt-6 text-lg">My career journey and achievements</p>
+      <p className="text-muted-foreground mt-6 text-lg">My career journey</p>
     </div>
   )
 
-  if (loading) {
-    return (
-      <section id="experience" className="relative py-24 px-4 sm:px-6 lg:px-8 bg-secondary/30">
-        <SectionBackground variant="grid" />
-        <div className="relative max-w-5xl mx-auto">
-          {sectionHeader}
-          <div className="text-center text-muted-foreground">Loading experience...</div>
-        </div>
-      </section>
-    )
-  }
-
-  if (error) {
-    return (
-      <section id="experience" className="relative py-24 px-4 sm:px-6 lg:px-8 bg-secondary/30">
-        <SectionBackground variant="grid" />
-        <div className="relative max-w-5xl mx-auto">
-          {sectionHeader}
-          <div className="text-center text-destructive bg-destructive/10 border border-destructive/20 rounded-lg p-4">
-            Error: {error}
-          </div>
-        </div>
-      </section>
-    )
-  }
+  // Dummy data is handled by hooks - show experiences (will be dummy if error)
 
   if (!experiences || experiences.length === 0) {
     return (
@@ -219,7 +195,7 @@ export function Experience() {
 
   return (
     <section id="experience" className="relative py-24 px-4 sm:px-6 lg:px-8 bg-secondary/30">
-      <SectionBackground variant="dots" />
+      <SectionBackground variant="dots" angle={20}/>
       <div className="max-w-5xl mx-auto">
         <div className="flex items-center justify-between mb-12">
           {sectionHeader}

@@ -64,7 +64,7 @@ function SortableProjectCard({
     <div
       ref={setNodeRef}
       style={style}
-      className="group relative bg-card border border-border rounded-xl overflow-hidden hover:border-accent/50 transition-all duration-300 hover:shadow-2xl hover:shadow-accent/10 hover:-translate-y-1"
+      className="group relative bg-card border border-border rounded-xl overflow-hidden hover:border-accent/50 transition-all duration-300 hover:shadow-2xl hover:shadow-accent/10 hover:-translate-y-1 flex flex-col h-full"
     >
       <div className="absolute top-3 left-3 z-10 flex gap-2">
         <button
@@ -114,28 +114,30 @@ function SortableProjectCard({
         </button>
       </div>
 
-      <div className="p-6">
-        <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-accent transition-colors">
-          {project.title}
-        </h3>
-        <p className="text-muted-foreground mb-4 leading-relaxed text-sm line-clamp-3">
-          {project.description}
-        </p>
+      <div className="p-6 flex flex-col flex-1 overflow-hidden">
+        <div className="flex-1 overflow-y-auto pr-2 mb-4">
+          <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-accent transition-colors">
+            {project.title}
+          </h3>
+          <p className="text-muted-foreground mb-4 leading-relaxed text-sm">
+            {project.description}
+          </p>
 
-        {project.tags && project.tags.length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-6">
-            {project.tags.map((tag: string, idx: number) => (
-              <span
-                key={idx}
-                className="px-3 py-1 bg-accent/10 text-accent text-xs font-medium rounded-full border border-accent/20 hover:bg-accent/20 transition-colors"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-        )}
+          {project.tags && project.tags.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-6">
+              {project.tags.map((tag: string, idx: number) => (
+                <span
+                  key={idx}
+                  className="px-3 py-1 bg-accent/10 text-accent text-xs font-medium rounded-full border border-accent/20 hover:bg-accent/20 transition-colors"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
 
-        <div className="flex gap-3">
+        <div className="flex gap-3 border-t border-border/50 pt-4">
           {project.live_url && (
             <a
               href={project.live_url}
@@ -152,12 +154,10 @@ function SortableProjectCard({
             <a
               href={project.github_url}
               target="_blank"
-              rel="noopener noreferrer"
-              className="flex-1 px-4 py-2.5 border border-border text-foreground rounded-lg font-medium hover:bg-secondary hover:border-accent/50 transition-all duration-200 flex items-center justify-center gap-2 text-sm"
               aria-label={`View source code for ${project.title}`}
             >
               <Github className="w-4 h-4" />
-              Code
+              Source Code
             </a>
           )}
         </div>

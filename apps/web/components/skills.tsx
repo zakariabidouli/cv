@@ -88,7 +88,7 @@ export function Skills() {
   if (!categories || categories.length === 0) {
     return (
       <section id="skills" className="relative py-24 px-4 sm:px-6 lg:px-8">
-        <div className="relative max-w-7xl mx-auto">
+        <div className="relative max-w-5xl mx-auto">
           <div className="flex items-center justify-between mb-12">
             {sectionHeader}
             {isAdmin && (
@@ -196,11 +196,11 @@ export function Skills() {
           </form>
         )}
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-8">
           {categories.map((cat) => (
             <div
               key={cat.id}
-              className="group p-6 bg-card border border-border rounded-xl hover:border-accent/50 transition-all duration-300 hover:shadow-2xl hover:shadow-accent/10 hover:-translate-y-1"
+              className="group p-8 bg-card border border-border rounded-xl hover:border-accent/50 transition-all duration-300 hover:shadow-lg hover:shadow-accent/20"
             >
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">

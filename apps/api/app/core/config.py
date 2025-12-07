@@ -15,8 +15,8 @@ class Settings(BaseSettings):
     # Environment: development, staging, production
     ENVIRONMENT: str = os.getenv("ENVIRONMENT", "development")
     
-    # API Key for authentication (backend only)
-    API_KEY: str = os.getenv("API_KEY", "")
+    # API Secret Key for authentication (backend only)
+    API_SECRET_KEY: str = os.getenv("API_SECRET_KEY", "")
     
     # JWT Configuration
     JWT_SECRET_KEY: str = os.getenv("JWT_SECRET_KEY", "your-secret-key-change-in-production")

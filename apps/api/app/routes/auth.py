@@ -20,11 +20,11 @@ def login(request: LoginRequest):
     The JWT token should be used for subsequent API requests in the Authorization header.
     Format: Authorization: Bearer <token>
     """
-    # Validate API key
-    if not settings.API_KEY or not settings.API_KEY.strip():
+    # Validate API secret key
+    if not settings.API_SECRET_KEY or not settings.API_SECRET_KEY.strip():
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="API key is not configured on the server"
+            detail="API secret key is not configured on the server"
         )
     
     if not request.api_key or not request.api_key.strip():
@@ -33,7 +33,7 @@ def login(request: LoginRequest):
             detail="API key cannot be blank"
         )
     
-    if request.api_key.strip() != settings.API_KEY.strip():
+    if request.api_key.strip() != settings.API_SECRET_KEY.strip():
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid API key"

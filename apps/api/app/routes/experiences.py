@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 from app.core.database import get_db
-from app.core.auth import verify_api_key
+from app.core.auth import verify_jwt_token
 from app.models.experience import Experience
 from app.schemas.experience import Experience as ExperienceSchema, ExperienceCreate, ExperienceUpdate
 
@@ -22,7 +22,7 @@ def get_experience(experience_id: int, db: Session = Depends(get_db)):
     return experience
 
 @router.post("/", response_model=ExperienceSchema, status_code=201)
-def create_experience(experience: ExperienceCreate, db: Session = Depends(get_db), _: bool = Depends(verify_api_key)):
+def create_experience(experience: ExperienceCreate, db: Session = Depends(get_db), _: dict = Depends(verify_jwt_token)):
     """Create a new experience"""
     db_experience = Experience(**experience.model_dump())
     db.add(db_experience)
@@ -31,7 +31,7 @@ def create_experience(experience: ExperienceCreate, db: Session = Depends(get_db
     return db_experience
 
 @router.put("/{experience_id}", response_model=ExperienceSchema)
-def update_experience(experience_id: int, experience: ExperienceUpdate, db: Session = Depends(get_db), _: bool = Depends(verify_api_key)):
+def update_experience(experience_id: int, experience: ExperienceUpdate, db: Session = Depends(get_db), _: dict = Depends(verify_jwt_token)):
     """Update an existing experience"""
     db_experience = db.query(Experience).filter(Experience.id == experience_id).first()
     if not db_experience:
@@ -46,7 +46,7 @@ def update_experience(experience_id: int, experience: ExperienceUpdate, db: Sess
     return db_experience
 
 @router.delete("/{experience_id}", status_code=204)
-def delete_experience(experience_id: int, db: Session = Depends(get_db), _: bool = Depends(verify_api_key)):
+def delete_experience(experience_id: int, db: Session = Depends(get_db), _: dict = Depends(verify_jwt_token)):
     """Delete an experience"""
     db_experience = db.query(Experience).filter(Experience.id == experience_id).first()
     if not db_experience:

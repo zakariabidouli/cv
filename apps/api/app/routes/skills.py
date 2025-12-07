@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 from app.core.database import get_db
-from app.core.auth import verify_api_key
+from app.core.auth import verify_jwt_token
 from app.models.skill import Skill, SkillCategory
 from app.schemas.skill import (
     Skill as SkillSchema, 
@@ -32,7 +32,7 @@ def get_category(category_id: int, db: Session = Depends(get_db)):
     return category
 
 @router.post("/categories", response_model=SkillCategorySchema, status_code=201)
-def create_category(category: SkillCategoryCreate, db: Session = Depends(get_db), _: bool = Depends(verify_api_key)):
+def create_category(category: SkillCategoryCreate, db: Session = Depends(get_db), _: dict = Depends(verify_jwt_token)):
     """Create a new skill category"""
     db_category = SkillCategory(**category.model_dump())
     db.add(db_category)
@@ -41,7 +41,7 @@ def create_category(category: SkillCategoryCreate, db: Session = Depends(get_db)
     return db_category
 
 @router.put("/categories/{category_id}", response_model=SkillCategorySchema)
-def update_category(category_id: int, category: SkillCategoryUpdate, db: Session = Depends(get_db), _: bool = Depends(verify_api_key)):
+def update_category(category_id: int, category: SkillCategoryUpdate, db: Session = Depends(get_db), _: dict = Depends(verify_jwt_token)):
     """Update a skill category"""
     db_category = db.query(SkillCategory).filter(SkillCategory.id == category_id).first()
     if not db_category:
@@ -56,7 +56,7 @@ def update_category(category_id: int, category: SkillCategoryUpdate, db: Session
     return db_category
 
 @router.delete("/categories/{category_id}", status_code=204)
-def delete_category(category_id: int, db: Session = Depends(get_db), _: bool = Depends(verify_api_key)):
+def delete_category(category_id: int, db: Session = Depends(get_db), _: dict = Depends(verify_jwt_token)):
     """Delete a skill category (will cascade delete skills)"""
     db_category = db.query(SkillCategory).filter(SkillCategory.id == category_id).first()
     if not db_category:
@@ -81,7 +81,7 @@ def get_skill(skill_id: int, db: Session = Depends(get_db)):
     return skill
 
 @router.post("/", response_model=SkillSchema, status_code=201)
-def create_skill(skill: SkillCreate, db: Session = Depends(get_db), _: bool = Depends(verify_api_key)):
+def create_skill(skill: SkillCreate, db: Session = Depends(get_db), _: dict = Depends(verify_jwt_token)):
     """Create a new skill"""
     # Verify category exists
     category = db.query(SkillCategory).filter(SkillCategory.id == skill.category_id).first()
@@ -95,7 +95,7 @@ def create_skill(skill: SkillCreate, db: Session = Depends(get_db), _: bool = De
     return db_skill
 
 @router.put("/{skill_id}", response_model=SkillSchema)
-def update_skill(skill_id: int, skill: SkillUpdate, db: Session = Depends(get_db), _: bool = Depends(verify_api_key)):
+def update_skill(skill_id: int, skill: SkillUpdate, db: Session = Depends(get_db), _: dict = Depends(verify_jwt_token)):
     """Update a skill"""
     db_skill = db.query(Skill).filter(Skill.id == skill_id).first()
     if not db_skill:
@@ -116,7 +116,7 @@ def update_skill(skill_id: int, skill: SkillUpdate, db: Session = Depends(get_db
     return db_skill
 
 @router.delete("/{skill_id}", status_code=204)
-def delete_skill(skill_id: int, db: Session = Depends(get_db), _: bool = Depends(verify_api_key)):
+def delete_skill(skill_id: int, db: Session = Depends(get_db), _: dict = Depends(verify_jwt_token)):
     """Delete a skill"""
     db_skill = db.query(Skill).filter(Skill.id == skill_id).first()
     if not db_skill:

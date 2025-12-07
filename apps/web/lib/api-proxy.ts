@@ -1,10 +1,14 @@
 // Server-side utility for proxying requests to backend API
 const BACKEND_API_URL = process.env.API_URL || 'http://localhost:8000'
-const API_KEY = process.env.API_KEY || ''
 
 export async function checkAdminSession(cookies: any): Promise<boolean> {
   const session = cookies.get('admin_session')
   return session?.value === 'authenticated'
+}
+
+export async function getAdminToken(cookies: any): Promise<string | null> {
+  const token = cookies.get('admin_token')
+  return token?.value || null
 }
 
 export async function proxyRequest(
@@ -35,9 +39,12 @@ export async function proxyRequest(
     headers.delete('Content-Type')
   }
 
-  // Add API key for write operations
-  if (requireAuth && API_KEY) {
-    headers.set('X-API-Key', API_KEY)
+  // Add JWT token for write operations
+  if (requireAuth) {
+    const token = await getAdminToken(cookies)
+    if (token) {
+      headers.set('Authorization', `Bearer ${token}`)
+    }
   }
 
   try {

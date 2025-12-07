@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 from app.core.database import get_db
-from app.core.auth import verify_api_key
+from app.core.auth import verify_jwt_token
 from app.models.social_link import SocialLink
 from app.schemas.social_link import SocialLink as SocialLinkSchema, SocialLinkCreate, SocialLinkUpdate
 
@@ -22,7 +22,7 @@ def get_social_link(link_id: int, db: Session = Depends(get_db)):
     return link
 
 @router.post("/", response_model=SocialLinkSchema, status_code=201)
-def create_social_link(link: SocialLinkCreate, db: Session = Depends(get_db), _: bool = Depends(verify_api_key)):
+def create_social_link(link: SocialLinkCreate, db: Session = Depends(get_db), _: dict = Depends(verify_jwt_token)):
     """Create a new social link"""
     db_link = SocialLink(**link.model_dump())
     db.add(db_link)
@@ -31,7 +31,7 @@ def create_social_link(link: SocialLinkCreate, db: Session = Depends(get_db), _:
     return db_link
 
 @router.put("/{link_id}", response_model=SocialLinkSchema)
-def update_social_link(link_id: int, link: SocialLinkUpdate, db: Session = Depends(get_db), _: bool = Depends(verify_api_key)):
+def update_social_link(link_id: int, link: SocialLinkUpdate, db: Session = Depends(get_db), _: dict = Depends(verify_jwt_token)):
     """Update an existing social link"""
     db_link = db.query(SocialLink).filter(SocialLink.id == link_id).first()
     if not db_link:
@@ -46,7 +46,7 @@ def update_social_link(link_id: int, link: SocialLinkUpdate, db: Session = Depen
     return db_link
 
 @router.delete("/{link_id}", status_code=204)
-def delete_social_link(link_id: int, db: Session = Depends(get_db), _: bool = Depends(verify_api_key)):
+def delete_social_link(link_id: int, db: Session = Depends(get_db), _: dict = Depends(verify_jwt_token)):
     """Delete a social link"""
     db_link = db.query(SocialLink).filter(SocialLink.id == link_id).first()
     if not db_link:

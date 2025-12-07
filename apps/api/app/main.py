@@ -29,7 +29,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import APIKeyHeader
 from app.core.database import Base, engine
 from app.core.config import settings
-from app.routes import projects, experiences, contacts, skills, about, social_links, resume
+from app.routes import projects, experiences, contacts, skills, about, social_links, resume, auth
 # Import all models to ensure they're registered
 from app.models import Project, Experience, Skill, SkillCategory, Contact, About, Stat, SocialLink, Resume
 
@@ -90,6 +90,7 @@ app.add_middleware(
 Base.metadata.create_all(bind=engine)
 
 # Include routers
+app.include_router(auth.router)
 app.include_router(projects.router)
 app.include_router(experiences.router)
 app.include_router(contacts.router)

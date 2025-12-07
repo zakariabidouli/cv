@@ -1,5 +1,6 @@
 from fastapi import Header, HTTPException, status
 from app.core.config import settings
+from app.core.jwt_handler import verify_token
 
 def verify_api_key(x_api_key: str = Header(..., alias="X-API-Key")):
     """
@@ -28,4 +29,34 @@ def verify_api_key(x_api_key: str = Header(..., alias="X-API-Key")):
         )
     
     return True
+
+def verify_jwt_token(authorization: str = Header(None, alias="Authorization")):
+    """
+    Dependency function to verify JWT token from Authorization header.
+    Accepts tokens in format: "Bearer <token>"
+    """
+    if not authorization:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Missing authorization header"
+        )
+    
+    # Extract token from "Bearer <token>" format
+    parts = authorization.split()
+    if len(parts) != 2 or parts[0].lower() != "bearer":
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid authorization header format"
+        )
+    
+    token = parts[1]
+    payload = verify_token(token)
+    
+    if not payload:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired token"
+        )
+    
+    return payload
 

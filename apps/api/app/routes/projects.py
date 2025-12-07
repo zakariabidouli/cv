@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 from app.core.database import get_db
-from app.core.auth import verify_api_key
+from app.core.auth import verify_jwt_token
 from app.models.project import Project
 from app.schemas.project import Project as ProjectSchema, ProjectCreate, ProjectUpdate
 
@@ -22,7 +22,7 @@ def get_project(project_id: int, db: Session = Depends(get_db)):
     return project
 
 @router.post("/", response_model=ProjectSchema, status_code=201)
-def create_project(project: ProjectCreate, db: Session = Depends(get_db), _: bool = Depends(verify_api_key)):
+def create_project(project: ProjectCreate, db: Session = Depends(get_db), _: dict = Depends(verify_jwt_token)):
     """Create a new project"""
     db_project = Project(**project.model_dump())
     db.add(db_project)
@@ -31,7 +31,7 @@ def create_project(project: ProjectCreate, db: Session = Depends(get_db), _: boo
     return db_project
 
 @router.put("/{project_id}", response_model=ProjectSchema)
-def update_project(project_id: int, project: ProjectUpdate, db: Session = Depends(get_db), _: bool = Depends(verify_api_key)):
+def update_project(project_id: int, project: ProjectUpdate, db: Session = Depends(get_db), _: dict = Depends(verify_jwt_token)):
     """Update an existing project"""
     db_project = db.query(Project).filter(Project.id == project_id).first()
     if not db_project:
@@ -46,7 +46,7 @@ def update_project(project_id: int, project: ProjectUpdate, db: Session = Depend
     return db_project
 
 @router.delete("/{project_id}", status_code=204)
-def delete_project(project_id: int, db: Session = Depends(get_db), _: bool = Depends(verify_api_key)):
+def delete_project(project_id: int, db: Session = Depends(get_db), _: dict = Depends(verify_jwt_token)):
     """Delete a project"""
     db_project = db.query(Project).filter(Project.id == project_id).first()
     if not db_project:

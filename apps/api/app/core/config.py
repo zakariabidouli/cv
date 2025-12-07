@@ -3,8 +3,6 @@ import os
 from typing import List
 
 class Settings(BaseSettings):
-    # DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./test.db")
-    # DATABASE_URL: str = "postgresql://postgres:8+u%qaUZa@db.hepnvmfeuodqagrpjadt.supabase.co:5432/postgres"
     DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./test.db")
     DB_POOL_SIZE: int = int(os.getenv("DB_POOL_SIZE", "5"))
     DB_MAX_OVERFLOW: int = int(os.getenv("DB_MAX_OVERFLOW", "10"))
@@ -17,11 +15,13 @@ class Settings(BaseSettings):
     # Environment: development, staging, production
     ENVIRONMENT: str = os.getenv("ENVIRONMENT", "development")
     
-    # Optional: API Secret Key for future authentication
-    API_SECRET_KEY: str = os.getenv("API_SECRET_KEY", "")
-    
-    # API Key for authentication (must match API_KEY in frontend/Vercel)
+    # API Key for authentication (backend only)
     API_KEY: str = os.getenv("API_KEY", "")
+    
+    # JWT Configuration
+    JWT_SECRET_KEY: str = os.getenv("JWT_SECRET_KEY", "your-secret-key-change-in-production")
+    JWT_ALGORITHM: str = "HS256"
+    JWT_EXPIRATION_HOURS: int = 24
     
     # Optional: Logging level
     LOG_LEVEL: str = os.getenv("LOG_LEVEL", "INFO")

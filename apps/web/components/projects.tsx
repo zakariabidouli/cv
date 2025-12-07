@@ -40,6 +40,7 @@ function SortableProjectCard({
   onEdit: (project: Project) => void
   onImageClick: (image: string) => void
 }) {
+  const [imageSrc, setImageSrc] = useState(project.image || "/pic.png")
   const {
     attributes,
     listeners,
@@ -53,6 +54,10 @@ function SortableProjectCard({
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
+  }
+
+  const handleImageError = () => {
+    setImageSrc("/pic.png")
   }
 
   return (
@@ -91,24 +96,23 @@ function SortableProjectCard({
           </>
         )}
       </div>
-      {project.image && (
-        <div className="relative h-56 overflow-hidden bg-secondary group">
-                <img
-                  src={project.image || "/placeholder.svg"}
-                  alt={project.title}
-            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-            loading="lazy"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-card/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          <button
-            onClick={() => onImageClick(project.image || "")}
-            className="absolute top-3 right-3 p-2 bg-background/80 backdrop-blur-sm border border-border rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-accent/10 hover:border-accent/50"
-            aria-label={`View full image of ${project.title}`}
-          >
-            <Maximize2 className="w-4 h-4 text-foreground" />
-          </button>
-        </div>
-      )}
+      <div className="relative h-56 overflow-hidden bg-secondary group">
+        <img
+          src={imageSrc}
+          alt={project.title}
+          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+          loading="lazy"
+          onError={handleImageError}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-card/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        <button
+          onClick={() => onImageClick(imageSrc)}
+          className="absolute top-3 right-3 p-2 bg-background/80 backdrop-blur-sm border border-border rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-accent/10 hover:border-accent/50"
+          aria-label={`View full image of ${project.title}`}
+        >
+          <Maximize2 className="w-4 h-4 text-foreground" />
+        </button>
+      </div>
 
       <div className="p-6">
         <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-accent transition-colors">

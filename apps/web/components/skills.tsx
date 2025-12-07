@@ -196,7 +196,7 @@ export function Skills() {
           </form>
         )}
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-8">
+        <div className="relative grid md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-8">
           {categories.map((cat) => (
             <div
               key={cat.id}

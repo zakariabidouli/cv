@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 
-const BACKEND_API_URL = process.env.API_URL || 'http://localhost:8000'
+const BACKEND_API_URL = (process.env.API_URL || 'http://localhost:8000').replace(/\/$/, '')
 
 export async function POST(request: NextRequest) {
   try {

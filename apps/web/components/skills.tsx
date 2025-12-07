@@ -88,7 +88,7 @@ export function Skills() {
   if (!categories || categories.length === 0) {
     return (
       <section id="skills" className="relative py-24 px-4 sm:px-6 lg:px-8">
-        <div className="relative max-w-5xl mx-auto">
+        <div className="relative max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-12">
             {sectionHeader}
             {isAdmin && (

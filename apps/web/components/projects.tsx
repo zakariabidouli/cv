@@ -285,7 +285,7 @@ export function Projects() {
         Featured Projects
       </h2>
       <div className="w-16 h-1 bg-gradient-to-r from-accent via-primary to-accent mx-auto rounded-full"></div>
-      <p className="text-muted-foreground mt-6 text-lg">Showcasing my best work and creative solutions</p>
+      <p className="text-muted-foreground mt-6 text-lg">Showcasing my best work and solutions</p>
     </div>
   )
 
@@ -310,7 +310,7 @@ export function Projects() {
 
           {isAdmin && showForm && (
             <form onSubmit={handleCreate} className="mb-12 grid gap-4 p-6 border border-border rounded-xl bg-card shadow-lg">
-              <div className="grid md:grid-cols-2 gap-4">
+              <div className="grid md:grid-cols-2 gap-4 ">
                 <input
                   required
                   placeholder="Title"

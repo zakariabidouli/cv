@@ -64,7 +64,7 @@ function SortableProjectCard({
     <div
       ref={setNodeRef}
       style={style}
-      className="group relative bg-card border border-border rounded-xl overflow-hidden hover:border-accent/50 transition-all duration-300 hover:shadow-2xl hover:shadow-accent/10 hover:-translate-y-1 flex flex-col h-full"
+      className="group relative bg-card border border-border rounded-xl overflow-hidden hover:border-accent/50 transition-all duration-300 hover:shadow-2xl hover:shadow-accent/10 hover:-translate-y-1"
     >
       <div className="absolute top-3 left-3 z-10 flex gap-2">
         <button
@@ -114,8 +114,8 @@ function SortableProjectCard({
         </button>
       </div>
 
-      <div className="p-6 flex flex-col flex-1 overflow-hidden">
-        <div className="flex-1 overflow-y-auto pr-2 mb-4">
+      <div className="p-6 flex flex-col h-80">
+        <div className="flex-1 overflow-y-auto pr-2">
           <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-accent transition-colors">
             {project.title}
           </h3>
@@ -137,7 +137,7 @@ function SortableProjectCard({
           )}
         </div>
 
-        <div className="flex gap-3 border-t border-border/50 pt-4">
+        <div className="flex gap-3 border-t border-border/50 pt-4 mt-4">
           {project.live_url && (
             <a
               href={project.live_url}

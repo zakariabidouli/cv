@@ -67,14 +67,14 @@ function SortableProjectCard({
       className="group relative bg-card border border-border rounded-xl overflow-hidden hover:border-accent/50 transition-all duration-300 hover:shadow-2xl hover:shadow-accent/10 hover:-translate-y-1"
     >
       <div className="absolute top-3 left-3 z-10 flex gap-2">
-        <button
+        {/* <button
           {...attributes}
           {...listeners}
           className="p-2 bg-background/80 backdrop-blur-sm border border-border rounded-lg hover:bg-accent/10 hover:border-accent/50 transition-colors cursor-grab active:cursor-grabbing"
           aria-label={`Drag to reorder ${project.title}`}
         >
           <GripVertical className="w-4 h-4 text-muted-foreground" />
-        </button>
+        </button> */}
         {isAdmin && (
           <>
             <button
@@ -105,13 +105,13 @@ function SortableProjectCard({
           onError={handleImageError}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-card/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-        <button
+        {/* <button
           onClick={() => onImageClick(imageSrc)}
           className="absolute top-3 right-3 p-2 bg-background/80 backdrop-blur-sm border border-border rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-accent/10 hover:border-accent/50"
           aria-label={`View full image of ${project.title}`}
         >
           <Maximize2 className="w-4 h-4 text-foreground" />
-        </button>
+        </button> */}
       </div>
 
       <div className="p-6 flex flex-col h-80">

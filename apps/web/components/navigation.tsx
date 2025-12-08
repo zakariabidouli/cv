@@ -81,7 +81,7 @@ export function Navigation() {
               className="text-xxl font-bold bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent hover:opacity-80 transition-opacity cursor-pointer"
               aria-label="Home"
             >
-              Z.bidouli
+              Bidouli
             </Link>
           </div>
 

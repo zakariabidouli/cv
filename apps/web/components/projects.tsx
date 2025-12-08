@@ -147,7 +147,7 @@ function SortableProjectCard({
               aria-label={`Visit live site for ${project.title}`}
             >
               <ExternalLink className="w-4 h-4 group-hover/link:translate-x-0.5 transition-transform" />
-              View Live
+              View
             </a>
           )}
           {project.github_url && (
@@ -157,7 +157,7 @@ function SortableProjectCard({
               aria-label={`View source code for ${project.title}`}
             >
               <Github className="w-4 h-4" />
-              Source Code
+              Repository
             </a>
           )}
         </div>

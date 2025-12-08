@@ -155,7 +155,7 @@ function SortableProjectCard({
               href={project.github_url}
               target="_blank"
               aria-label={`View source code for ${project.title}`}
-              className="flex-1 px-4 py-2.5  text-accent-foreground rounded-lg font-medium hover:shadow-lg hover:shadow-accent/30 transition-all duration-200 flex items-center justify-center gap-2 text-sm group/link"
+              className="flex-1 px-4 py-2.5 rounded-lg font-medium hover:shadow-lg hover:shadow-accent/30 transition-all duration-200 flex items-center justify-center gap-2 text-sm group/link"
             >
               <Github className="w-4 h-4" />
               Repository

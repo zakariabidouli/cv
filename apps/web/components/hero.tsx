@@ -147,12 +147,12 @@ export function Hero() {
         <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold mb-6 leading-tight animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-200">
           Software Craftsman &{" "}
           <span className="bg-gradient-to-r from-accent via-primary to-accent bg-clip-text text-transparent animate-gradient bg-[length:200%_auto]">
-            Creative Developer
+            Developer
           </span>
         </h1>
 
         <p className="text-lg sm:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-300">
-          I craft elegant, performant digital experiences. Specializing in full-stack development with a passion for
+          I code elegant, performant digital experiences. Specializing in full-stack development with a passion for
           intuitive interfaces, and scalable solutions.
         </p>
 

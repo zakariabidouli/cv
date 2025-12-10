@@ -5,7 +5,7 @@ from typing import Optional
 
 logger = logging.getLogger(__name__)
 
-VERCEL_BLOB_TOKEN = os.getenv("VERCEL_BLOB_TOKEN", "")
+VERCEL_BLOB_TOKEN = os.getenv("BLOB_READ_WRITE_TOKEN", "")
 
 
 async def upload_to_blob(file_content: bytes, filename: str) -> Optional[str]:

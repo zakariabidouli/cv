@@ -210,7 +210,7 @@ export function Hero() {
                       // Upload directly to Vercel Blob
                       const response = await fetch(`/api/blob-upload?filename=${encodeURIComponent(file.name)}`, {
                         method: 'POST',
-                        body: file,
+                        body: file.stream(),
                       })
                       
                       if (!response.ok) {

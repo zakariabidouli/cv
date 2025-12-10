@@ -14,7 +14,6 @@ export async function POST(request: NextRequest) {
   const response = await proxyRequest('/resume/', {
     method: 'POST',
     body: JSON.stringify(body),
-    headers: { 'Content-Type': 'application/json' },
   }, true, cookieStore)
   return response
 }

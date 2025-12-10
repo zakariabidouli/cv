@@ -1,22 +1,19 @@
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Request
-from fastapi.responses import FileResponse
+from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 from typing import Optional
-from pathlib import Path
 from datetime import datetime
-import shutil
-import os
+import logging
 
 from app.core.database import get_db
 from app.core.auth import verify_jwt_token
+from app.core.blob_storage import upload_to_blob, delete_from_blob
 from app.models.resume import Resume as ResumeModel
 from app.schemas.resume import Resume as ResumeSchema
 
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/resume", tags=["Resume"])
-
-UPLOAD_DIR = Path("app/uploads/resumes")
-UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 
 @router.get("/latest", response_model=Optional[ResumeSchema])
@@ -26,64 +23,51 @@ def get_latest_resume(request: Request, db: Session = Depends(get_db)):
     if not resume:
         return None
 
-    file_url = request.url_for("download_resume", resume_id=resume.id)
     return ResumeSchema(
         id=resume.id,
         original_filename=resume.original_filename,
         mime_type=resume.mime_type,
-        file_url=str(file_url),
+        file_url=resume.blob_url,
         created_at=resume.created_at,
     )
 
 
-@router.get("/{resume_id}/file", response_class=FileResponse, name="download_resume")
+@router.get("/{resume_id}/file", name="download_resume")
 def download_resume(resume_id: int, db: Session = Depends(get_db)):
-    """Download a specific resume PDF file."""
+    """Redirect to Vercel Blob URL for resume download."""
     resume = db.query(ResumeModel).filter(ResumeModel.id == resume_id).first()
     if not resume:
         raise HTTPException(status_code=404, detail="Resume not found")
 
-    file_path = Path(resume.file_path)
-    
-    # If path is relative, resolve it from UPLOAD_DIR
-    if not file_path.is_absolute():
-        file_path = UPLOAD_DIR / file_path.name
-    
-    if not file_path.is_file():
-        raise HTTPException(status_code=404, detail="Resume file not found on disk")
-
-    return FileResponse(
-        path=str(file_path),
-        media_type=resume.mime_type or "application/pdf",
-        filename=resume.original_filename,
-    )
+    return RedirectResponse(url=resume.blob_url, status_code=302)
 
 
 @router.post("/", response_model=ResumeSchema, status_code=201)
-def upload_resume(
+async def upload_resume(
     request: Request,
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
     _: dict = Depends(verify_jwt_token),
 ):
-    """Upload a new resume PDF. Stores file on disk and metadata in DB."""
+    """Upload a new resume PDF to Vercel Blob."""
     if not file.filename.lower().endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Only PDF files are allowed")
 
-    timestamp = datetime.utcnow().strftime("%Y%m%d%H%M%S")
-    safe_name = file.filename.replace(" ", "_")
-    stored_filename = f"{timestamp}_{safe_name}"
-    stored_path = UPLOAD_DIR / stored_filename
-
     try:
-        with stored_path.open("wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
-    except (IOError, OSError) as e:
-        raise HTTPException(status_code=500, detail=f"Failed to save resume file: {str(e)}")
+        file_content = await file.read()
+    except Exception as e:
+        logger.error(f"Failed to read file: {str(e)}")
+        raise HTTPException(status_code=400, detail="Failed to read file")
+
+    logger.info(f"Uploading resume to Vercel Blob: {file.filename}")
+    blob_url = await upload_to_blob(file_content, file.filename)
+    
+    if not blob_url:
+        raise HTTPException(status_code=500, detail="Failed to upload file to blob storage")
 
     try:
         db_resume = ResumeModel(
-            file_path=str(stored_path.resolve()),
+            blob_url=blob_url,
             original_filename=file.filename,
             mime_type=file.content_type or "application/pdf",
             created_at=datetime.utcnow().isoformat(),
@@ -91,37 +75,30 @@ def upload_resume(
         db.add(db_resume)
         db.commit()
         db.refresh(db_resume)
+        logger.info(f"Resume metadata saved to DB with ID: {db_resume.id}")
     except Exception as e:
-        try:
-            os.remove(stored_path)
-        except OSError:
-            pass
+        logger.error(f"Failed to save resume metadata: {str(e)}")
+        await delete_from_blob(blob_url)
         raise HTTPException(status_code=500, detail=f"Failed to save resume metadata: {str(e)}")
 
-    file_url = request.url_for("download_resume", resume_id=db_resume.id)
     return ResumeSchema(
         id=db_resume.id,
         original_filename=db_resume.original_filename,
         mime_type=db_resume.mime_type,
-        file_url=str(file_url),
+        file_url=blob_url,
         created_at=db_resume.created_at,
     )
 
 
 @router.delete("/{resume_id}", status_code=204)
-def delete_resume(resume_id: int, db: Session = Depends(get_db), _: dict = Depends(verify_jwt_token)):
-    """Delete a resume and its file from disk."""
+async def delete_resume(resume_id: int, db: Session = Depends(get_db), _: dict = Depends(verify_jwt_token)):
+    """Delete a resume from Vercel Blob and database."""
     resume = db.query(ResumeModel).filter(ResumeModel.id == resume_id).first()
     if not resume:
         raise HTTPException(status_code=404, detail="Resume not found")
 
-    file_path = Path(resume.file_path)
-    if file_path.is_file():
-        try:
-            os.remove(file_path)
-        except OSError:
-            # Don't fail deletion if file removal has issues
-            pass
+    logger.info(f"Deleting resume from Vercel Blob: {resume.blob_url}")
+    await delete_from_blob(resume.blob_url)
 
     db.delete(resume)
     db.commit()

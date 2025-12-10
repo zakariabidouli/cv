@@ -2,7 +2,6 @@ import os
 import requests
 import logging
 from typing import Optional
-import io
 
 logger = logging.getLogger(__name__)
 
@@ -19,16 +18,16 @@ async def upload_to_blob(file_content: bytes, filename: str) -> Optional[str]:
         return None
 
     try:
-        # Vercel Blob API endpoint
-        url = "https://blob.vercel-storage.com/upload"
+        # Vercel Blob API endpoint - use the correct endpoint for uploading
+        url = "https://blob.vercel-storage.com"
         
         headers = {
             "Authorization": f"Bearer {VERCEL_BLOB_TOKEN}",
         }
         
-        # Prepare multipart form data
+        # Prepare multipart form data with correct field name
         files = {
-            "file": (filename, io.BytesIO(file_content), "application/pdf"),
+            "file": (filename, file_content, "application/pdf"),
         }
         
         params = {
@@ -44,9 +43,9 @@ async def upload_to_blob(file_content: bytes, filename: str) -> Optional[str]:
             timeout=30,
         )
         
-        logger.info(f"Vercel Blob response: {response.status_code}")
+        logger.info(f"Vercel Blob response: {response.status_code} - {response.text}")
         
-        if response.status_code == 200:
+        if response.status_code in [200, 201]:
             data = response.json()
             blob_url = data.get("url")
             logger.info(f"File uploaded to Vercel Blob: {blob_url}")

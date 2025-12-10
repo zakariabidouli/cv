@@ -11,7 +11,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   const cookieStore = await cookies()
   const formData = await request.formData()
-  const response = await proxyRequest('/resume/', {
+  const response = await proxyRequest('/resume', {
     method: 'POST',
     body: formData,
   }, true, cookieStore)

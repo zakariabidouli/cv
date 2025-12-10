@@ -330,7 +330,7 @@ class ApiClient {
 
   // Resume
   async getLatestResume(): Promise<Resume | null> {
-    return this.fetch<Resume | null>('/resume')
+    return this.fetch<Resume | null>('/resume/latest')
   }
 
   async uploadResume(file: File): Promise<Resume> {

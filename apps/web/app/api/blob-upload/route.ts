@@ -13,12 +13,14 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const blob = await put(filename, request.body, {
+    const buffer = await request.arrayBuffer()
+    const blob = await put(filename, buffer, {
       access: 'public',
     })
 
     return NextResponse.json(blob)
   } catch (error) {
+    console.error('Blob upload error:', error)
     return NextResponse.json(
       { error: 'Failed to upload blob' },
       { status: 500 }

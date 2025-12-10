@@ -213,7 +213,8 @@ export function Hero() {
                       const response = await fetch(`/api/blob-upload?filename=${encodeURIComponent(file.name)}`, {
                         method: 'POST',
                         body: file.stream(),
-                      })
+                        duplex: 'half',
+                      } as RequestInit)
                       
                       console.log('📤 Blob upload response:', response.status)
                       if (!response.ok) {

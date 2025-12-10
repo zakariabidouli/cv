@@ -10,10 +10,11 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   const cookieStore = await cookies()
-  const formData = await request.formData()
+  const body = await request.json()
   const response = await proxyRequest('/resume/', {
     method: 'POST',
-    body: formData,
+    body: JSON.stringify(body),
+    headers: { 'Content-Type': 'application/json' },
   }, true, cookieStore)
   return response
 }

@@ -206,7 +206,32 @@ export function Hero() {
                     if (!file) return
                     try {
                       setUploading(true)
-                      await api.uploadResume(file)
+                      
+                      // Upload directly to Vercel Blob
+                      const response = await fetch(`/api/blob-upload?filename=${encodeURIComponent(file.name)}`, {
+                        method: 'POST',
+                        body: file,
+                      })
+                      
+                      if (!response.ok) {
+                        throw new Error('Failed to upload to blob storage')
+                      }
+                      
+                      const blobData = await response.json()
+                      const blobUrl = blobData.url
+                      
+                      // Save blob URL to database via backend
+                      const resumeResponse = await fetch('/api/resume', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ blob_url: blobUrl, original_filename: file.name }),
+                        credentials: 'include',
+                      })
+                      
+                      if (!resumeResponse.ok) {
+                        throw new Error('Failed to save resume metadata')
+                      }
+                      
                       await refreshResume()
                     } catch (err) {
                       console.error("Failed to upload resume:", err)

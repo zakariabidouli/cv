@@ -45,40 +45,35 @@ def download_resume(resume_id: int, db: Session = Depends(get_db)):
 @router.post("/", response_model=ResumeSchema, status_code=201)
 async def upload_resume(
     request: Request,
-    file: UploadFile = File(...),
     db: Session = Depends(get_db),
     _: dict = Depends(verify_jwt_token),
 ):
-    """Upload a new resume PDF to Vercel Blob."""
-    if not file.filename.lower().endswith(".pdf"):
-        raise HTTPException(status_code=400, detail="Only PDF files are allowed")
-
+    """Save resume metadata with blob URL (file already uploaded to Vercel Blob by client)."""
     try:
-        file_content = await file.read()
+        body = await request.json()
     except Exception as e:
-        logger.error(f"Failed to read file: {str(e)}")
-        raise HTTPException(status_code=400, detail="Failed to read file")
+        logger.error(f"Failed to parse request body: {str(e)}")
+        raise HTTPException(status_code=400, detail="Invalid request body")
 
-    logger.info(f"Uploading resume to Vercel Blob: {file.filename}")
-    blob_url = await upload_to_blob(file_content, file.filename)
-    
-    if not blob_url:
-        raise HTTPException(status_code=500, detail="Failed to upload file to blob storage")
+    blob_url = body.get("blob_url")
+    original_filename = body.get("original_filename")
+
+    if not blob_url or not original_filename:
+        raise HTTPException(status_code=400, detail="blob_url and original_filename are required")
 
     try:
         db_resume = ResumeModel(
             blob_url=blob_url,
-            original_filename=file.filename,
-            mime_type=file.content_type or "application/pdf",
+            original_filename=original_filename,
+            mime_type="application/pdf",
             created_at=datetime.utcnow().isoformat(),
         )
         db.add(db_resume)
         db.commit()
         db.refresh(db_resume)
-        logger.info(f"Resume metadata saved to DB with ID: {db_resume.id}")
+        logger.info(f"Resume metadata saved to DB with ID: {db_resume.id}, blob_url: {blob_url}")
     except Exception as e:
         logger.error(f"Failed to save resume metadata: {str(e)}")
-        await delete_from_blob(blob_url)
         raise HTTPException(status_code=500, detail=f"Failed to save resume metadata: {str(e)}")
 
     return ResumeSchema(

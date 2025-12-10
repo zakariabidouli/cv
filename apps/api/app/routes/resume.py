@@ -16,6 +16,22 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/resume", tags=["Resume"])
 
 
+@router.get("/", response_model=Optional[ResumeSchema])
+def get_resume(request: Request, db: Session = Depends(get_db)):
+    """Get the latest uploaded resume (alias for /latest)."""
+    resume = db.query(ResumeModel).order_by(ResumeModel.id.desc()).first()
+    if not resume:
+        return None
+
+    return ResumeSchema(
+        id=resume.id,
+        original_filename=resume.original_filename,
+        mime_type=resume.mime_type,
+        file_url=resume.blob_url,
+        created_at=resume.created_at,
+    )
+
+
 @router.get("/latest", response_model=Optional[ResumeSchema])
 def get_latest_resume(request: Request, db: Session = Depends(get_db)):
     """Get the latest uploaded resume (or null if none)."""

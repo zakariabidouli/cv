@@ -49,33 +49,44 @@ async def upload_resume(
     _: dict = Depends(verify_jwt_token),
 ):
     """Save resume metadata with blob URL (file already uploaded to Vercel Blob by client)."""
+    logger.info("📤 POST /resume/ endpoint called")
+    
     try:
         body = await request.json()
+        logger.info(f"📤 Request body received: {body}")
     except Exception as e:
-        logger.error(f"Failed to parse request body: {str(e)}")
+        logger.error(f"❌ Failed to parse request body: {str(e)}")
         raise HTTPException(status_code=400, detail="Invalid request body")
 
     blob_url = body.get("blob_url")
     original_filename = body.get("original_filename")
+    
+    logger.info(f"📤 Extracted: blob_url={blob_url}, original_filename={original_filename}")
 
     if not blob_url or not original_filename:
+        logger.error("❌ Missing blob_url or original_filename")
         raise HTTPException(status_code=400, detail="blob_url and original_filename are required")
 
     try:
+        logger.info("💾 Creating ResumeModel...")
         db_resume = ResumeModel(
             blob_url=blob_url,
             original_filename=original_filename,
             mime_type="application/pdf",
             created_at=datetime.utcnow().isoformat(),
         )
+        logger.info("💾 Adding to database...")
         db.add(db_resume)
+        logger.info("💾 Committing...")
         db.commit()
+        logger.info("💾 Refreshing...")
         db.refresh(db_resume)
-        logger.info(f"Resume metadata saved to DB with ID: {db_resume.id}, blob_url: {blob_url}")
+        logger.info(f"✅ Resume metadata saved to DB with ID: {db_resume.id}, blob_url: {blob_url}")
     except Exception as e:
-        logger.error(f"Failed to save resume metadata: {str(e)}")
+        logger.error(f"❌ Failed to save resume metadata: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Failed to save resume metadata: {str(e)}")
 
+    logger.info(f"✅ Returning ResumeSchema for ID: {db_resume.id}")
     return ResumeSchema(
         id=db_resume.id,
         original_filename=db_resume.original_filename,

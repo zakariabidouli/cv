@@ -206,21 +206,28 @@ export function Hero() {
                     if (!file) return
                     try {
                       setUploading(true)
+                      console.log('📤 Starting resume upload:', file.name)
                       
                       // Upload directly to Vercel Blob
+                      console.log('📤 Uploading to /api/blob-upload')
                       const response = await fetch(`/api/blob-upload?filename=${encodeURIComponent(file.name)}`, {
                         method: 'POST',
                         body: file.stream(),
                       })
                       
+                      console.log('📤 Blob upload response:', response.status)
                       if (!response.ok) {
-                        throw new Error('Failed to upload to blob storage')
+                        const errorText = await response.text()
+                        console.error('❌ Blob upload failed:', errorText)
+                        throw new Error(`Failed to upload to blob storage: ${response.status}`)
                       }
                       
                       const blobData = await response.json()
+                      console.log('✅ Blob uploaded:', blobData)
                       const blobUrl = blobData.url
                       
                       // Save blob URL to database via backend
+                      console.log('💾 Saving to database:', { blob_url: blobUrl, original_filename: file.name })
                       const resumeResponse = await fetch('/api/resume', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -228,13 +235,20 @@ export function Hero() {
                         credentials: 'include',
                       })
                       
+                      console.log('💾 Resume save response:', resumeResponse.status)
                       if (!resumeResponse.ok) {
-                        throw new Error('Failed to save resume metadata')
+                        const errorText = await resumeResponse.text()
+                        console.error('❌ Resume save failed:', errorText)
+                        throw new Error(`Failed to save resume metadata: ${resumeResponse.status}`)
                       }
                       
+                      const savedResume = await resumeResponse.json()
+                      console.log('✅ Resume saved:', savedResume)
+                      
                       await refreshResume()
+                      console.log('✅ Resume refreshed')
                     } catch (err) {
-                      console.error("Failed to upload resume:", err)
+                      console.error("❌ Failed to upload resume:", err)
                     } finally {
                       setUploading(false)
                       e.target.value = ""

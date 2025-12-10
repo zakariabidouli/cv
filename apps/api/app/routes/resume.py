@@ -44,6 +44,11 @@ def download_resume(resume_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Resume not found")
 
     file_path = Path(resume.file_path)
+    
+    # If path is relative, resolve it from UPLOAD_DIR
+    if not file_path.is_absolute():
+        file_path = UPLOAD_DIR / file_path.name
+    
     if not file_path.is_file():
         raise HTTPException(status_code=404, detail="Resume file not found on disk")
 
@@ -70,18 +75,28 @@ def upload_resume(
     stored_filename = f"{timestamp}_{safe_name}"
     stored_path = UPLOAD_DIR / stored_filename
 
-    with stored_path.open("wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
+    try:
+        with stored_path.open("wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+    except (IOError, OSError) as e:
+        raise HTTPException(status_code=500, detail=f"Failed to save resume file: {str(e)}")
 
-    db_resume = ResumeModel(
-        file_path=str(stored_path),
-        original_filename=file.filename,
-        mime_type=file.content_type or "application/pdf",
-        created_at=datetime.utcnow().isoformat(),
-    )
-    db.add(db_resume)
-    db.commit()
-    db.refresh(db_resume)
+    try:
+        db_resume = ResumeModel(
+            file_path=str(stored_path.resolve()),
+            original_filename=file.filename,
+            mime_type=file.content_type or "application/pdf",
+            created_at=datetime.utcnow().isoformat(),
+        )
+        db.add(db_resume)
+        db.commit()
+        db.refresh(db_resume)
+    except Exception as e:
+        try:
+            os.remove(stored_path)
+        except OSError:
+            pass
+        raise HTTPException(status_code=500, detail=f"Failed to save resume metadata: {str(e)}")
 
     file_url = request.url_for("download_resume", resume_id=db_resume.id)
     return ResumeSchema(

@@ -239,12 +239,15 @@ export function useResume() {
   const refresh = useCallback(async () => {
     try {
       setLoading(true)
+      console.log('🔄 Fetching latest resume...')
       const data = await api.getLatestResume()
+      console.log('✅ Resume fetched:', data)
       setResume(data)
       setError(null)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch resume')
-      console.error('Error fetching resume:', err)
+      const errorMsg = err instanceof Error ? err.message : 'Failed to fetch resume'
+      setError(errorMsg)
+      console.error('❌ Error fetching resume:', err)
     } finally {
       setLoading(false)
     }

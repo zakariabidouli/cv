@@ -1,319 +1,108 @@
 "use client"
 
-import { ArrowRight, Github, Linkedin, Mail, Download, Trash2, UploadCloud } from "lucide-react"
-import { useSocialLinks, useResume } from "@/lib/hooks"
-import { SectionBackground } from "@/components/section-background"
-import { useAdmin } from "@/contexts/AdminContext"
-import { api } from "@/lib/api"
-import { useState } from "react"
-// import useState
+import { Github, Linkedin, Mail } from "lucide-react"
+import type { SocialLink } from "@/lib/content"
 
-
-// Icon mapping
-const iconMap: Record<string, typeof Github> = {
-  github: Github,
+const ICON_MAP: Record<string, React.ElementType> = {
+  github:   Github,
   linkedin: Linkedin,
-  email: Mail,
-  mail: Mail,
+  email:    Mail,
+  mail:     Mail,
 }
 
-function DeveloperIllustration() {
-  return (
-    <div className="absolute inset-0 overflow-hidden opacity-20 pointer-events-none">
-      <svg
-        viewBox="0 0 800 600"
-        className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/4 w-full max-w-4xl"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        {/* Desk */}
-        <rect x="200" y="400" width="400" height="15" fill="currentColor" className="text-accent/40" />
-        
-        {/* Monitor */}
-        <rect x="280" y="250" width="240" height="160" rx="8" fill="currentColor" className="text-primary/30" />
-        <rect x="290" y="260" width="220" height="130" fill="currentColor" className="text-background" />
-        
-        {/* Code lines on screen - animated */}
-        <g className="animate-pulse">
-          <rect x="300" y="275" width="80" height="4" fill="currentColor" className="text-accent" />
-          <rect x="300" y="290" width="120" height="4" fill="currentColor" className="text-primary" />
-          <rect x="310" y="305" width="100" height="4" fill="currentColor" className="text-accent" />
-          <rect x="310" y="320" width="90" height="4" fill="currentColor" className="text-primary" />
-          <rect x="300" y="335" width="110" height="4" fill="currentColor" className="text-accent" />
-          <rect x="310" y="350" width="85" height="4" fill="currentColor" className="text-primary" />
-          <rect x="300" y="365" width="95" height="4" fill="currentColor" className="text-accent" />
-        </g>
-        
-        {/* Monitor stand */}
-        <rect x="385" y="410" width="30" height="30" fill="currentColor" className="text-primary/30" />
-        <rect x="370" y="435" width="60" height="8" rx="4" fill="currentColor" className="text-accent/40" />
-        
-        {/* Coffee cup */}
-        <ellipse cx="550" cy="395" rx="20" ry="8" fill="currentColor" className="text-primary/30" />
-        <path d="M 530 395 L 535 355 L 565 355 L 570 395 Z" fill="currentColor" className="text-accent/40" />
-        <path d="M 570 365 Q 590 365 590 380 Q 590 395 570 395" fill="none" stroke="currentColor" strokeWidth="3" className="text-primary/30" />
-        
-        {/* Steam from coffee - animated */}
-        <g className="animate-pulse">
-          <path d="M 540 345 Q 538 335 540 325" fill="none" stroke="currentColor" strokeWidth="2" className="text-accent/40" opacity="0.6" />
-          <path d="M 550 345 Q 552 335 550 325" fill="none" stroke="currentColor" strokeWidth="2" className="text-primary/40" opacity="0.6" />
-          <path d="M 560 345 Q 558 335 560 325" fill="none" stroke="currentColor" strokeWidth="2" className="text-accent/40" opacity="0.6" />
-        </g>
-        
-        {/* Plant */}
-        <ellipse cx="650" cy="395" rx="25" ry="10" fill="currentColor" className="text-primary/30" />
-        <rect x="640" y="360" width="20" height="35" fill="currentColor" className="text-accent/40" />
-        <ellipse cx="650" cy="355" rx="30" ry="25" fill="currentColor" className="text-green-500/40" />
-        <path d="M 650 355 Q 670 345 675 330" fill="none" stroke="currentColor" strokeWidth="3" className="text-green-500/50" />
-        <path d="M 650 355 Q 630 345 625 330" fill="none" stroke="currentColor" strokeWidth="3" className="text-green-500/50" />
-        
-        {/* Keyboard */}
-        <rect x="320" y="420" width="160" height="50" rx="4" fill="currentColor" className="text-primary/30" />
-        <g fill="currentColor" className="text-accent/40">
-          <rect x="330" y="430" width="10" height="8" rx="1" />
-          <rect x="345" y="430" width="10" height="8" rx="1" />
-          <rect x="360" y="430" width="10" height="8" rx="1" />
-          <rect x="375" y="430" width="10" height="8" rx="1" />
-          <rect x="390" y="430" width="10" height="8" rx="1" />
-          <rect x="405" y="430" width="10" height="8" rx="1" />
-          <rect x="420" y="430" width="10" height="8" rx="1" />
-          <rect x="435" y="430" width="10" height="8" rx="1" />
-          <rect x="450" y="430" width="10" height="8" rx="1" />
-          <rect x="465" y="430" width="10" height="8" rx="1" />
-          
-          <rect x="335" y="445" width="10" height="8" rx="1" />
-          <rect x="350" y="445" width="10" height="8" rx="1" />
-          <rect x="365" y="445" width="10" height="8" rx="1" />
-          <rect x="380" y="445" width="10" height="8" rx="1" />
-          <rect x="395" y="445" width="10" height="8" rx="1" />
-          <rect x="410" y="445" width="10" height="8" rx="1" />
-          <rect x="425" y="445" width="10" height="8" rx="1" />
-          <rect x="440" y="445" width="10" height="8" rx="1" />
-          <rect x="455" y="445" width="10" height="8" rx="1" />
-          
-          <rect x="340" y="460" width="130" height="8" rx="1" />
-        </g>
-        
-        {/* Floating code symbols */}
-        <g className="animate-pulse" opacity="0.3">
-          <text x="150" y="150" fontSize="40" fill="currentColor" className="text-accent">&lt;/&gt;</text>
-          <text x="650" y="200" fontSize="35" fill="currentColor" className="text-primary">{'{}'}</text>
-          <text x="700" y="450" fontSize="30" fill="currentColor" className="text-accent">( )</text>
-          <text x="100" y="400" fontSize="38" fill="currentColor" className="text-primary">[ ]</text>
-        </g>
-        
-        {/* Cursor blink on screen */}
-        <rect x="395" y="365" width="3" height="6" fill="currentColor" className="text-accent animate-pulse" />
-      </svg>
-      
-      {/* Gradient orbs for depth - positioned on left */}
-      <div className="absolute top-20 left-0 w-72 h-72 bg-accent/10 rounded-full blur-3xl animate-pulse"></div>
-      <div className="absolute bottom-20 left-20 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-    </div>
-  )
+type Props = {
+  resumeUrl:   string | null
+  socialLinks: SocialLink[]
 }
 
-export function Hero() {
-  const { links } = useSocialLinks()
-  const { resume, refresh: refreshResume } = useResume()
-  const { isAdmin } = useAdmin()
-  const [uploading, setUploading] = useState(false)
-
-  const scrollToProjects = () => {
-    const element = document.getElementById("projects")
-    element?.scrollIntoView({ behavior: "smooth" })
-  }
-
-  const scrollToAbout = () => {
-    const element = document.getElementById("about")
-    element?.scrollIntoView({ behavior: "smooth" })
-  }
-
+export function Hero({ resumeUrl, socialLinks }: Props) {
   return (
-    <section className="relative min-h-screen flex items-center justify-center pt-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
-      {/* <SectionBackground variant="grid" /> */}
-      <DeveloperIllustration />
-      <div className="relative max-w-4xl mx-auto text-center z-10">
-        <div className="mb-8 inline-block animate-in fade-in slide-in-from-top-4 duration-700">
-          <div className="px-6 py-2.5 bg-gradient-to-r from-accent/10 to-primary/10 rounded-full border border-accent/20 backdrop-blur-sm">
-            <p className="text-sm font-medium bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent">
-              {/* on click scroll to about section */}
-              <button onClick={scrollToAbout}>
-                who am I ?
-              </button>
-            </p>
-          </div>
+    <section
+      id="hero"
+      className="relative px-6 sm:px-8 lg:px-12"
+      aria-labelledby="hero-headline"
+    >
+      <div className="max-w-5xl mx-auto min-h-[calc(100svh-3rem)] flex flex-col justify-between pt-16 pb-12">
+
+        {/* ── Zone 1: Top row ── */}
+        <div
+          className="flex items-center justify-between"
+          style={{ animation: "hero-fade 0.7s ease-out both", animationDelay: "0ms" }}
+        >
+          <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
+            Software Engineer
+          </span>
+          <span className="font-mono text-[11px] uppercase tracking-[0.15em] text-muted-foreground flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-accent animate-dot-pulse flex-shrink-0" />
+            OCP Group · Mining Division
+          </span>
         </div>
 
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold mb-6 leading-tight animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-200">
-          Software Craftsman &{" "}
-          <span className="bg-gradient-to-r from-accent via-primary to-accent bg-clip-text text-transparent animate-gradient bg-[length:200%_auto]">
-            Developer
-          </span>
-        </h1>
+        {/* ── Zone 2: Name ── */}
+        <div
+          className="-mt-4"
+          style={{ animation: "hero-fade 0.7s ease-out both", animationDelay: "150ms" }}
+        >
+          <h1
+            id="hero-headline"
+            className="font-black text-foreground leading-[0.88] tracking-[-0.04em] uppercase select-none"
+            style={{ fontSize: "clamp(4.5rem, 14vw, 11.5rem)" }}
+          >
+            Zakaria
+            <br />
+            Bidouli
+          </h1>
+        </div>
 
-        <p className="text-lg sm:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-300">
-          I code elegant, performant digital experiences. Specializing in full-stack development with a passion for
-          intuitive interfaces, and scalable solutions.
-        </p>
+        {/* ── Zone 3: Bottom row ── */}
+        <div
+          className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-8"
+          style={{ animation: "hero-fade 0.7s ease-out both", animationDelay: "300ms" }}
+        >
+          {/* Tagline in Instrument Serif italic */}
+          <p className="font-display italic text-muted-foreground text-lg sm:text-xl lg:text-2xl leading-snug max-w-md">
+            I engineer distributed systems and real-time platforms.
+          </p>
 
-        <div className="flex flex-col gap-4 mb-12 animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-500">
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button
-              onClick={scrollToProjects}
-              className="group relative px-8 py-3.5 bg-gradient-to-r from-accent to-primary text-accent-foreground rounded-lg font-semibold hover:shadow-2xl hover:shadow-accent/30 transition-all duration-300 flex items-center justify-center gap-2 overflow-hidden"
-            >
-              <span className="relative z-10 flex items-center gap-2">
-                View My Work
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </span>
-              <div className="absolute inset-0 bg-gradient-to-r from-primary to-accent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            </button>
-
-            {resume?.file_url ? (
+          {/* Social links + optional CV */}
+          <div className="flex items-center gap-3 flex-shrink-0">
+            {resumeUrl && (
               <a
-                href={resume.file_url}
+                href={resumeUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group px-8 py-3.5 border-2 border-border text-foreground rounded-lg font-semibold hover:bg-secondary hover:border-accent/50 transition-all duration-300 flex items-center justify-center gap-2"
-                aria-label="Download CV"
+                className="font-mono text-[11px] uppercase tracking-[0.15em] text-muted-foreground hover:text-foreground border border-border/60 hover:border-border px-3 py-1.5 transition-colors duration-200"
               >
-                <Download className="w-4 h-4 group-hover:translate-y-0.5 transition-transform" />
-                Download CV
+                CV ↗
               </a>
-            ) : (
-              <button
-                className="group px-8 py-3.5 border-2 border-dashed border-border text-muted-foreground rounded-lg font-semibold cursor-not-allowed flex items-center justify-center gap-2"
-                aria-label="Download CV"
-                disabled
-              >
-                <Download className="w-4 h-4" />
-                Resume not available
-              </button>
             )}
-          </div>
-
-          {isAdmin && (
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-xs sm:text-sm text-muted-foreground">
-              <label className="flex items-center gap-2 px-4 py-2 border border-dashed border-border rounded-lg hover:border-accent/50 hover:bg-secondary/40 cursor-pointer transition-colors">
-                <UploadCloud className="w-4 h-4 text-accent" />
-                <span>{uploading ? "Uploading..." : resume ? "Replace resume (PDF)" : "Upload resume (PDF)"}</span>
-                <input
-                  type="file"
-                  accept="application/pdf"
-                  className="hidden"
-                  onChange={async (e) => {
-                    const file = e.target.files?.[0]
-                    if (!file) return
-                    try {
-                      setUploading(true)
-                      console.log('📤 Starting resume upload:', file.name)
-                      
-                      // Upload directly to Vercel Blob
-                      console.log('📤 Uploading to /api/blob-upload')
-                      const response = await fetch(`/api/blob-upload?filename=${encodeURIComponent(file.name)}`, {
-                        method: 'POST',
-                        body: file.stream(),
-                        duplex: 'half',
-                      } as RequestInit)
-                      
-                      console.log('📤 Blob upload response:', response.status)
-                      if (!response.ok) {
-                        const errorText = await response.text()
-                        console.error('❌ Blob upload failed:', errorText)
-                        throw new Error(`Failed to upload to blob storage: ${response.status}`)
-                      }
-                      
-                      const blobData = await response.json()
-                      console.log('✅ Blob uploaded:', blobData)
-                      const blobUrl = blobData.url
-                      
-                      // Save blob URL to database via backend
-                      console.log('💾 Saving to database:', { blob_url: blobUrl, original_filename: file.name })
-                      const resumeResponse = await fetch('/api/resume', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ blob_url: blobUrl, original_filename: file.name }),
-                        credentials: 'include',
-                      })
-                      
-                      console.log('💾 Resume save response:', resumeResponse.status)
-                      if (!resumeResponse.ok) {
-                        const errorText = await resumeResponse.text()
-                        console.error('❌ Resume save failed:', errorText)
-                        throw new Error(`Failed to save resume metadata: ${resumeResponse.status}`)
-                      }
-                      
-                      const savedResume = await resumeResponse.json()
-                      console.log('✅ Resume saved:', savedResume)
-                      
-                      await refreshResume()
-                      console.log('✅ Resume refreshed')
-                    } catch (err) {
-                      console.error("❌ Failed to upload resume:", err)
-                    } finally {
-                      setUploading(false)
-                      e.target.value = ""
-                    }
-                  }}
-                />
-              </label>
-
-              {resume && (
-                <button
-                  onClick={async () => {
-                    if (!confirm("Delete the current resume PDF?")) return
-                    try {
-                      await api.deleteResume(resume.id)
-                      await refreshResume()
-                    } catch (err) {
-                      console.error("Failed to delete resume:", err)
-                    }
-                  }}
-                  className="flex items-center gap-2 px-4 py-2 border border-destructive/40 text-destructive rounded-lg hover:bg-destructive/10 transition-colors"
-                >
-                  <Trash2 className="w-4 h-4" />
-                  Delete resume
-                </button>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* Social Links */}
-        {links && links.length > 0 && (
-          <div className="flex justify-center gap-4 animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-700">
-            {links.map((link) => {
-              const Icon = iconMap[link.platform.toLowerCase()] || Github
+            {socialLinks.map((link, idx) => {
+              const Icon = ICON_MAP[link.platform.toLowerCase()] ?? Github
               return (
                 <a
-                  key={link.id}
+                  key={idx}
                   href={link.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group relative p-3.5 bg-card border border-border rounded-full text-muted-foreground hover:text-accent hover:border-accent/50 hover:bg-accent/5 transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-accent/20"
-                  aria-label={`Visit my ${link.platform} profile`}
+                  aria-label={link.platform}
+                  className="w-8 h-8 flex items-center justify-center border border-border/60 hover:border-accent/60 text-muted-foreground hover:text-accent transition-all duration-200"
                 >
-                  <Icon className="w-5 h-5 relative z-10" />
-                  <div className="absolute inset-0 rounded-full bg-accent/10 scale-0 group-hover:scale-100 transition-transform duration-300"></div>
+                  <Icon className="w-3.5 h-3.5" />
                 </a>
               )
             })}
           </div>
-        )}
-
-        {/* Scroll Indicator */}
-        <div className="mt-20 flex justify-center animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-1000">
-          <a
-            href="#about"
-            className="group flex flex-col items-center gap-2 text-muted-foreground hover:text-accent transition-colors"
-            aria-label="Scroll to about section"
-          >
-            <div className="w-6 h-10 border-2 border-muted-foreground group-hover:border-accent rounded-full flex items-start justify-center p-2 transition-colors">
-              <div className="w-1.5 h-3 bg-accent rounded-full animate-bounce"></div>
-            </div>
-            <span className="text-xs font-medium">Scroll</span>
-          </a>
         </div>
+
+        {/* ── Scroll hint ── */}
+        <a
+          href="#about"
+          className="absolute bottom-10 left-1/2 -translate-x-1/2 font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground/40 hover:text-muted-foreground/70 transition-colors duration-200"
+          aria-label="Scroll to About"
+          style={{ animation: "hero-fade 0.7s ease-out both", animationDelay: "450ms" }}
+        >
+          ↓
+        </a>
       </div>
     </section>
   )

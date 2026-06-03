@@ -3,30 +3,24 @@
 import { useEffect, useState } from "react"
 
 export function ScrollProgress() {
-  const [scrollProgress, setScrollProgress] = useState(0)
+  const [progress, setProgress] = useState(0)
 
   useEffect(() => {
-    const updateScrollProgress = () => {
-      const scrollPx = document.documentElement.scrollTop
-      const winHeightPx =
-        document.documentElement.scrollHeight - document.documentElement.clientHeight
-      const scrolled = (scrollPx / winHeightPx) * 100
-      setScrollProgress(scrolled)
+    const update = () => {
+      const { scrollTop, scrollHeight, clientHeight } = document.documentElement
+      const max = scrollHeight - clientHeight
+      setProgress(max > 0 ? (scrollTop / max) * 100 : 0)
     }
-
-    window.addEventListener("scroll", updateScrollProgress)
-    updateScrollProgress()
-
-    return () => window.removeEventListener("scroll", updateScrollProgress)
+    window.addEventListener("scroll", update, { passive: true })
+    return () => window.removeEventListener("scroll", update)
   }, [])
 
   return (
-    <div className="fixed top-0 left-0 right-0 h-1 bg-background/50 z-[100]">
+    <div className="fixed top-0 left-0 right-0 h-[2px] z-[100]" aria-hidden="true">
       <div
-        className="h-full bg-gradient-to-r from-accent to-primary transition-all duration-150 ease-out"
-        style={{ width: `${scrollProgress}%` }}
+        className="h-full bg-gradient-to-r from-accent via-primary to-accent transition-[width] duration-100 ease-out"
+        style={{ width: `${progress}%` }}
       />
     </div>
   )
 }
-

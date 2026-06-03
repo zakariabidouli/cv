@@ -1,191 +1,138 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import Link from "next/link"
-import { LogOut, Shield } from "lucide-react"
+import { cn } from "@/lib/utils"
 import ThemeToggle from "@/components/ThemeToggle"
-import { useAdmin } from "@/contexts/AdminContext"
 
+const NAV_ITEMS = [
+  { label: "About",      href: "#about" },
+  { label: "Experience", href: "#experience" },
+  { label: "Projects",   href: "#projects" },
+  { label: "Skills",     href: "#skills" },
+  { label: "Contact",    href: "#contact" },
+]
 
 export function Navigation() {
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen,        setIsOpen]        = useState(false)
   const [activeSection, setActiveSection] = useState("")
-  const { isAdmin, logout } = useAdmin()
-
-  const navItems = [
-    { label: "About", href: "#about" },
-    { label: "Experience", href: "#experience" },
-    { label: "Projects", href: "#projects" },
-    { label: "Skills", href: "#skills" },
-    { label: "Contact", href: "#contact" },
-  ]
 
   useEffect(() => {
-    const handleScroll = () => {
-      const sections = navItems.map((item) => item.href.substring(1))
-      const scrollPosition = window.scrollY + 100
-      const windowHeight = window.innerHeight
-      const documentHeight = document.documentElement.scrollHeight
+    const onScroll = () => {
+      const sections = NAV_ITEMS.map((i) => i.href.slice(1))
+      const offset   = window.scrollY + 80
 
-      // Check if we're at the very top (before first section)
-      const firstSection = document.getElementById(sections[0])
-      if (firstSection && scrollPosition < firstSection.offsetTop) {
-        setActiveSection('')
-        return
-      }
+      const firstEl = document.getElementById(sections[0])
+      if (firstEl && offset < firstEl.offsetTop) { setActiveSection(""); return }
 
-      // Check if we're at the bottom of the page - activate last section
-      if (scrollPosition + windowHeight >= documentHeight - 50) {
-        const lastSection = sections[sections.length - 1]
-        const lastElement = document.getElementById(lastSection)
-        if (lastElement) {
-          setActiveSection(lastSection)
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const el = document.getElementById(sections[i])
+        if (el && offset >= el.offsetTop - 80) {
+          setActiveSection(sections[i])
           return
         }
       }
-
-      // Check sections in reverse order to catch the correct one
-      // This ensures we match the section we're actually in, not just passed
-      for (let i = sections.length - 1; i >= 0; i--) {
-        const section = sections[i]
-        const element = document.getElementById(section)
-        if (element) {
-          const { offsetTop, offsetHeight } = element
-          // Check if scroll position is within this section's bounds
-          if (scrollPosition >= offsetTop - 100 && scrollPosition < offsetTop + offsetHeight) {
-            setActiveSection(section)
-            return
-          }
-        }
-      }
     }
+    window.addEventListener("scroll", onScroll, { passive: true })
+    onScroll()
+    return () => window.removeEventListener("scroll", onScroll)
+  }, [])
 
-    window.addEventListener("scroll", handleScroll)
-    handleScroll()
-
-    return () => window.removeEventListener("scroll", handleScroll)
+  useEffect(() => {
+    const onResize = () => { if (window.innerWidth >= 768) setIsOpen(false) }
+    window.addEventListener("resize", onResize)
+    return () => window.removeEventListener("resize", onResize)
   }, [])
 
   return (
-    <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b border-border shadow-sm">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          <div className="flex-shrink-0">
-            <Link
-              href="#"
-              onClick={(e) => {
-                e.preventDefault()
-                window.scrollTo({ top: 0, behavior: 'smooth' })
-                setActiveSection('')
-              }}
-              className="text-xxl font-bold bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent hover:opacity-80 transition-opacity cursor-pointer"
-              aria-label="Home"
-            >
-              Bidouli
-            </Link>
-          </div>
+    <header
+      className="fixed top-0 inset-x-0 z-50 border-b border-border/40 bg-background/90 backdrop-blur-sm"
+      role="banner"
+    >
+      <nav
+        className="max-w-5xl mx-auto px-6 sm:px-8 lg:px-12 h-12 flex items-center justify-between"
+        aria-label="Main navigation"
+      >
+        {/* Monogram */}
+        <a
+          href="#"
+          onClick={(e) => {
+            e.preventDefault()
+            window.scrollTo({ top: 0, behavior: "smooth" })
+            setActiveSection("")
+          }}
+          className="font-mono text-xs tracking-[0.2em] uppercase text-foreground hover:text-accent transition-colors duration-200"
+          aria-label="Zakaria Bidouli — home"
+        >
+          ZB
+        </a>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex space-x-1">
-            {navItems.map((item) => {
-              const sectionId = item.href.substring(1)
-              const isActive = activeSection === sectionId
-              return (
-                <a
-                  key={item.label}
-                  href={item.href}
-                  className={`relative px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
-                    isActive
-                      ? "text-accent bg-accent/10"
-                      : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-                  }`}
-                >
-                  {item.label}
-                  {isActive && (
-                    <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 bg-accent rounded-full"></span>
-                  )}
-                </a>
-              )
-            })}
-
-            {/* add a button to toggle the dark mode   */}
-            <ThemeToggle />
-            
-            {/* Admin Logout Button - Only show when logged in */}
-            {isAdmin && (
-              <button
-                onClick={logout}
-                className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 text-accent bg-accent/10 hover:bg-accent/20"
-                aria-label="Logout Admin"
-                title="Logout Admin"
+        {/* Desktop links */}
+        <div className="hidden md:flex items-center gap-7">
+          {NAV_ITEMS.map(({ label, href }) => {
+            const id       = href.slice(1)
+            const isActive = activeSection === id
+            return (
+              <a
+                key={label}
+                href={href}
+                className={cn(
+                  "font-mono text-[11px] uppercase tracking-[0.18em] transition-colors duration-200",
+                  isActive
+                    ? "text-foreground"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
               >
-                <Shield className="w-4 h-4" />
-                <span className="hidden sm:inline">Admin</span>
-                <LogOut className="w-4 h-4" />
-              </button>
-            )}
-
+                {label}
+              </a>
+            )
+          })}
+          <div className="pl-4 border-l border-border/60">
+            <ThemeToggle />
           </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            className="md:hidden p-2 rounded-lg hover:bg-secondary transition-colors"
-            onClick={() => setIsOpen(!isOpen)}
-            aria-label="Toggle menu"
-            aria-expanded={isOpen}
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d={isOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"}
-              />
-            </svg>
-          </button>
         </div>
 
-        {/* Mobile Navigation */}
-        {isOpen && (
-          <div className="md:hidden pb-4 space-y-2 animate-in slide-in-from-top-2">
-            {navItems.map((item) => {
-              const sectionId = item.href.substring(1)
-              const isActive = activeSection === sectionId
+        {/* Mobile controls */}
+        <div className="md:hidden flex items-center gap-4">
+          <ThemeToggle />
+          <button
+            onClick={() => setIsOpen((v) => !v)}
+            className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground hover:text-foreground transition-colors"
+            aria-label={isOpen ? "Close menu" : "Open menu"}
+            aria-expanded={isOpen}
+            aria-controls="mobile-menu"
+          >
+            {isOpen ? "Close" : "Menu"}
+          </button>
+        </div>
+      </nav>
+
+      {/* Mobile menu */}
+      {isOpen && (
+        <div
+          id="mobile-menu"
+          className="md:hidden border-t border-border/40 bg-background/95 backdrop-blur-sm"
+        >
+          <div className="max-w-5xl mx-auto px-6 py-5 flex flex-col gap-5">
+            {NAV_ITEMS.map(({ label, href }) => {
+              const id       = href.slice(1)
+              const isActive = activeSection === id
               return (
                 <a
-                  key={item.label}
-                  href={item.href}
-                  className={`block px-4 py-2 rounded-lg transition-colors duration-200 ${
-                    isActive
-                      ? "text-accent bg-accent/10 font-medium"
-                      : "text-muted-foreground hover:text-foreground hover:bg-secondary"
-                  }`}
+                  key={label}
+                  href={href}
+                  className={cn(
+                    "font-mono text-[11px] uppercase tracking-[0.2em] transition-colors duration-200",
+                    isActive ? "text-foreground" : "text-muted-foreground"
+                  )}
                   onClick={() => setIsOpen(false)}
                 >
-                  {item.label}
+                  {label}
                 </a>
               )
             })}
-            <div className="flex items-center gap-2 px-4 py-2">
-              <ThemeToggle />
-              {isAdmin && (
-                <button
-                  onClick={() => {
-                    logout()
-                    setIsOpen(false)
-                  }}
-                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 text-accent bg-accent/10 hover:bg-accent/20"
-                  aria-label="Logout Admin"
-                >
-                  <Shield className="w-4 h-4" />
-                  <span>Admin</span>
-                  <LogOut className="w-4 h-4" />
-                </button>
-              )}
-            </div>
           </div>
-        )}
-      </div>
-    </nav>
+        </div>
+      )}
+    </header>
   )
 }

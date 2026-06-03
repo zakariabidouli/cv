@@ -2,37 +2,27 @@
 
 import { useTheme } from "next-themes"
 import { useEffect, useState } from "react"
+import { Sun, Moon } from "lucide-react"
 
 export default function ThemeToggle() {
-  const { setTheme, theme } = useTheme()
+  const { setTheme, resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
 
-  // Avoid hydration mismatch
-  useEffect(() => {
-    setMounted(true)
-  }, [])
+  useEffect(() => setMounted(true), [])
 
   if (!mounted) {
-    return (
-      <button className="px-4 py-2 rounded-lg bg-muted text-muted-foreground transition-colors duration-200">
-        Loading...
-      </button>
-    )
+    return <div className="w-9 h-9 rounded-lg bg-secondary" aria-hidden="true" />
   }
 
-  const isDarkMode = theme === "dark"
-
-  const toggleTheme = () => {
-    setTheme(isDarkMode ? "light" : "dark")
-  }
+  const isDark = resolvedTheme === "dark"
 
   return (
     <button
-      onClick={toggleTheme}
-      className="px-4 py-2 rounded-xl bg-transparent text-muted-foreground hover:text-xl transition-all duration-200 font-medium"
-      aria-label="Toggle theme"
+      onClick={() => setTheme(isDark ? "light" : "dark")}
+      className="w-9 h-9 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary transition-all duration-200"
+      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
     >
-      {isDarkMode ? "☀️" : "🌙"}
+      {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
     </button>
   )
 }
